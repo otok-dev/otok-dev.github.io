@@ -1,0 +1,20 @@
+---
+// Otok (c) Alexander A Pototskiy
+// SPDX-License-Identifier: CC0-1.0
+import Default from '@astrojs/starlight/components/Footer.astro';
+---
+
+<Default><slot /></Default>
+<p class="otok-license">
+  Text <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; examples
+  <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.
+</p>
+
+<style>
+  .otok-license {
+    margin-top: 1rem;
+    font-size: var(--sl-text-xs);
+    color: var(--sl-color-gray-3);
+    text-align: center;
+  }
+</style>

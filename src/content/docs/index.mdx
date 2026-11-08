@@ -1,0 +1,43 @@
+---
+title: Otok
+description: Native libraries built from source into XCFrameworks for Xcode and SwiftPM — and for Android, Windows and Linux.
+template: splash
+hero:
+  tagline: Native libraries built from source into XCFrameworks for Xcode and SwiftPM — and for Android, Windows and Linux.
+  actions:
+    - text: Why otok
+      link: /why/
+      icon: right-arrow
+    - text: Get started
+      link: /start/apple/
+      icon: right-arrow
+      variant: secondary
+    - text: Coming from CocoaPods
+      link: /start/from-cocoapods/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid>
+  <Card title="Your build of every library" icon="setting">
+    Not a binary someone built once with their choices: otok builds each library from source for your app, with the
+    options you ask for, your platforms and deployment versions, static or dynamic, your C++ standard, your flags and
+    your Xcode.
+  </Card>
+  <Card title="One file says everything" icon="document">
+    Libraries, versions, options, platforms, flags and profiles are all in `otok.toml`, and nothing else changes what
+    is built: no triplets, overlays or environment variables to read besides it. `otok.lock` pins every input by its
+    hash.
+  </Card>
+  <Card title="Ready for the App Store" icon="approve-check">
+    XCFrameworks for every Apple platform and simulator, privacy manifests, checks of required-reason APIs and of
+    symbols that would clash with Apple's private libraries, and the acknowledgements of every license.
+  </Card>
+  <Card title="Nothing touches your Xcode project" icon="apple">
+    otok writes one directory, a Swift package you add once. No generated workspace, no build phases. The same project
+    builds the same libraries for Android, Windows and Linux.
+  </Card>
+</CardGrid>
+
+[Browse the libraries](https://otok-dev.github.io/index/) of the public index.

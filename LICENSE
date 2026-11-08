@@ -1,0 +1,12 @@
+The otok documentation (c) Alexander A Pototskiy and its contributors.
+
+The text of the documentation is licensed under the Creative Commons Attribution 4.0 International License
+(CC BY 4.0, LICENSE-CC-BY-4.0.txt): you may share and adapt it for any purpose, giving appropriate credit
+(the otok documentation, https://otok-dev.github.io), a link to the license, and indicating if changes were made.
+
+The examples (code blocks: project files, build files, programs, commands) are dedicated to the public domain under
+CC0 1.0 Universal (LICENSE-CC0-1.0.txt): copy them into your projects without any condition.
+
+The site's own code (astro.config.mjs, src/content.config.ts, src/components/) is licensed under CC0 1.0 as well.
+
+Contributions are accepted under these same terms.
