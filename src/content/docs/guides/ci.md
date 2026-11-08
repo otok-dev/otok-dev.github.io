@@ -14,6 +14,10 @@ otok install --locked
 `--locked` fails instead of changing the lock, so CI never builds anything that was not committed. The libraries come
 from otok's cache when they were built before with the same inputs and toolchain; otherwise they are built.
 
+The lock must already hold the runner's system: a lock made on a Mac fails `--locked` on a Windows runner until
+`otok install` has run once on Windows and that change is committed
+([the lock across machines](/guides/targets/#the-lock-across-machines)).
+
 ## GitHub Actions on macOS
 
 ```yaml
