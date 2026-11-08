@@ -17,6 +17,7 @@ export default defineConfig({
       },
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/otok-dev/otok' },
+        { icon: 'heart', label: 'Sponsor', href: 'https://github.com/sponsors/apotocki' },
       ],
       components: {
         Footer: './src/components/Footer.astro',
