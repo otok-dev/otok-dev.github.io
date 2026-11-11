@@ -32,22 +32,28 @@ scoop install otok
 The Windows target builds with Visual Studio 2022 or 2026 and its *Desktop development with C++* workload
 (otok finds the newest installation by itself). otok needs `git` on the `PATH` (`scoop install git`).
 
+Builds run in an AppContainer, the sandbox of Windows, which needs no administrator rights. Keep `otok-sandbox.dll`
+beside `otok.exe` (Scoop and the release archive have both): otok puts it in every process of a build.
+
 ## Linux
 
 Download `otok-<version>-linux-x64.tar.gz` from the [latest release](https://github.com/otok-dev/otok/releases/latest)
 and put `otok` on your `PATH`:
 
 ```sh
-tar -xzf otok-0.3.0-linux-x64.tar.gz
-install -m 755 otok-0.3.0-linux-x64/otok ~/.local/bin/otok
+tar -xzf otok-0.4.0-linux-x64.tar.gz
+install -m 755 otok-0.4.0-linux-x64/otok ~/.local/bin/otok
 ```
 
 The binary needs only glibc and the GNU C++ runtime. The Linux target builds with GCC or Clang, and otok runs every
-build in [bubblewrap](https://github.com/containers/bubblewrap) when `bwrap` is on the `PATH`:
+build in [bubblewrap](https://github.com/containers/bubblewrap), so `bwrap` must be on the `PATH`:
 
 ```sh
 sudo apt install git build-essential bubblewrap
 ```
+
+Without it otok stops before the first build; `--no-sandbox` (or `sandbox = false` in
+[`config.toml`](/reference/config/)) builds unisolated, in a container that is itself the isolation, for example.
 
 ## Android
 
@@ -64,7 +70,7 @@ or to check a release binary, build it yourself.
 `.sha256`, the complete source with its submodule; or clone the tag:
 
 ```sh
-git clone --recurse-submodules --branch v0.3.0 https://github.com/otok-dev/otok
+git clone --recurse-submodules --branch v0.4.0 https://github.com/otok-dev/otok
 ```
 
 **What it needs.** A C++23 compiler (Visual Studio 2026, or the GCC and Clang of a current Linux, or Xcode's Clang),

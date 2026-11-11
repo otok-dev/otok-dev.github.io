@@ -90,8 +90,8 @@ built on (`systems`), and holds the tools of each.
 
 ### Sandbox
 
-The isolation every build runs in on macOS and Linux: no network, no access to your files, writes only into the
-build's own directories.
+The isolation every build runs in (Seatbelt on macOS, bubblewrap on Linux, an AppContainer on Windows): no network, no
+access to your files, writes only into the build's own directories.
 
 ## What is built
 

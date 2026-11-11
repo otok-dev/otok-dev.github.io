@@ -50,7 +50,8 @@ with another Xcode builds again; that is correct, not a miss to fix.
 
 ## Windows
 
-Download the release's zip and put `otok.exe` on the `PATH`; the runner's Visual Studio builds the libraries:
+Download the release's zip and put its directory on the `PATH` (`otok-sandbox.dll` stays beside `otok.exe`); the
+runner's Visual Studio builds the libraries:
 
 ```yaml
     runs-on: windows-2025
@@ -81,6 +82,10 @@ Download the release's zip and put `otok.exe` on the `PATH`; the runner's Visual
 
 The same pattern works anywhere: the cache is one directory (`OTOK_CACHE_DIR` moves it), and nothing in it depends on
 the path of the project. Inputs can be kept on your own servers too, see [Where inputs come from](/guides/fetch/).
+
+On Linux, builds run in bubblewrap: install it on the runner (`sudo apt-get install -y bubblewrap`). Where `bwrap`
+cannot make its namespaces, inside most Docker containers, otok stops before the first build and says so; there the
+container is the isolation, and `OTOK_SANDBOX=0` (or `--no-sandbox`) builds without the sandbox.
 
 When a build fails, otok prints the end of its log and keeps the whole log in the cache's `failed/` directory; with
 `--keep-build-dirs` it keeps the work directory too. Upload `failed/` as an artifact of a failed job.

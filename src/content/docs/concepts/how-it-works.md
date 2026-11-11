@@ -34,7 +34,7 @@ comes after those it depends on, and as many at once as the machine's processors
 - runs the recipe's `build` function with a toolchain otok set up for the slice: the compilers and SDK of your
   Xcode, Visual Studio, NDK or Linux, the flags of the platform, architecture, deployment version and configuration,
   and your project's flags;
-- runs without network access and, on macOS and Linux, in a sandbox that lets it write only into its own directories;
+- runs in a sandbox, without network access, that lets it write only into its own directories;
 - is checked: every library must be built for the slice's platform and architecture, and must not refer to otok's
   directories.
 

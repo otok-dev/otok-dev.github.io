@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 100 100">
+  <!-- otok mark, rounded tile: the ring of the Otok family with two lines merging into one arrow (sources and
+       a recipe become one build). Source for the site, the organization's avatar and package listings. -->
+  <defs>
+    <mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="100">
+      <rect width="100" height="100" fill="#fff"/>
+      <path d="M17 35 C 32 35, 38 50, 52 50 H80 M17 65 C 32 65, 38 50, 52 50 M68 38 L81 50 L68 62" fill="none" stroke="#000" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+    </mask>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="#1F3A5F"/>
+  <circle cx="50" cy="50" r="25" fill="none" stroke="#F2B33D" stroke-width="12" mask="url(#cut)"/>
+  <path d="M17 35 C 32 35, 38 50, 52 50 H80 M17 65 C 32 65, 38 50, 52 50 M68 38 L81 50 L68 62" fill="none" stroke="#FFF8E7" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

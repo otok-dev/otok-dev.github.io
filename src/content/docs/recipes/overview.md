@@ -75,7 +75,7 @@ headers. otok then checks every library (that it is built for the slice's platfo
 refer to the build's own directories), and packages the slices: XCFrameworks for Apple, directories per ABI for
 Android, per architecture and configuration for Windows.
 
-On macOS and Linux builds run in a sandbox, without network access and writing only into their own directories. Everything a
+Builds run in a sandbox, without network access and writing only into their own directories. Everything a
 build needs is fetched before it starts and checked against its hash: the source, the recipe's resources, the
 dependencies' builds, the tools.
 

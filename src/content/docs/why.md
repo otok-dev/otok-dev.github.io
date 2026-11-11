@@ -128,15 +128,16 @@ Building a library runs its build scripts on your machine: configure scripts, CM
 by people you do not know. With CocoaPods a pod's `prepare_command` runs on `pod install`, and its script phases in
 every Xcode build, with all the access your account has.
 
-otok runs every build in a sandbox on macOS and Linux:
+otok runs every build in a sandbox, on macOS, Linux and Windows:
 
 - **no network:** everything a build needs is downloaded before it starts and checked against its hash, so a build
   cannot fetch anything else, or send anything away;
 - **no access to your files:** a build cannot read your home directory, only its own source, the recipe and the
   builds it depends on, and it writes only into its own directories.
 
-A build that tries anything else fails. On Windows builds are not isolated yet; libraries for
-Windows can be built isolated today across from Linux, with clang-cl and the Windows SDK (`linux/clang-cl`).
+A build that tries anything else fails. The sandbox needs no administrator rights: Seatbelt on macOS, bubblewrap on
+Linux, an AppContainer on Windows. Where it cannot be made (Linux without `bwrap`), otok does not build unisolated on its
+own: it stops and says so, and `--no-sandbox` builds without it when you ask.
 
 ## Ready for the App Store
 

@@ -70,7 +70,7 @@ starts an escape.
 | `llvm` | `OTOK_LLVM` | The LLVM whose clang-cl builds in `windows/clang-cl` and `linux/clang-cl`. |
 | `windows-sdk` | `OTOK_WINDOWS_SDK` | For `linux/clang-cl`: the CRT and Windows SDK laid out by `xwin splat`. |
 | `git` | `OTOK_GIT` | The git program, when it is not on the `PATH`. |
-| `sandbox` | `OTOK_SANDBOX` | `false` to build without the sandbox, for diagnosing a build it stops; every build warns. |
+| `sandbox` | `OTOK_SANDBOX` | `false` to build without the sandbox (as `--no-sandbox`): on a machine that has none, or for a build it stops; every build warns. |
 | `keep-build-dirs` | `OTOK_KEEP_BUILD_DIRS` | Keep the work directories of failed builds, not only their logs. |
 | `color` | `OTOK_COLOR` | `"auto"`, `"always"` or `"never"`. |
 
