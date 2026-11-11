@@ -21,6 +21,7 @@ export default defineConfig({
       ],
       components: {
         Footer: './src/components/Footer.astro',
+        SiteTitle: './src/components/SiteTitle.astro',
       },
       editLink: {
         baseUrl: 'https://github.com/otok-dev/otok-dev.github.io/edit/main/',

@@ -1,0 +1,43 @@
+---
+// Otok (c) Alexander A Pototskiy
+// SPDX-License-Identifier: CC0-1.0
+//
+// The site's title with the otok release the documentation describes.
+import Default from '@astrojs/starlight/components/SiteTitle.astro';
+import { OTOK_VERSION, OTOK_RELEASE } from '../otok';
+---
+
+<div class="otok-title sl-flex">
+  <Default />
+  <a class="otok-version" href={OTOK_RELEASE} title={`This documentation describes otok ${OTOK_VERSION}`}>
+    {OTOK_VERSION}
+  </a>
+</div>
+
+<style>
+  .otok-title {
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .otok-version {
+    /* The letters of the title sit below the center of its line, and its lowercase "tok" pulls the eye lower
+       still: centered, the badge looks too high. */
+    position: relative;
+    top: 0.1875rem;
+    flex-shrink: 0;
+    padding: 0.0625rem 0.4375rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 999px;
+    font-size: var(--sl-text-xs);
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    color: var(--sl-color-gray-2);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .otok-version:hover {
+    border-color: var(--sl-color-text-accent);
+    color: var(--sl-color-text-accent);
+  }
+</style>

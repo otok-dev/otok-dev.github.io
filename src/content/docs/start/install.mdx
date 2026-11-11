@@ -5,6 +5,9 @@ sidebar:
   order: 1
 ---
 
+import { Code } from '@astrojs/starlight/components';
+import { OTOK_VERSION } from '../../../otok';
+
 otok is one program with no dependencies of its own. The tools the recipes need to build (CMake, Ninja,
 Python, Meson, make and others) are built or downloaded by their own recipes, so you install only what builds
 for your target: Xcode, Visual Studio, the Android NDK or a Linux compiler.
@@ -40,10 +43,8 @@ beside `otok.exe` (Scoop and the release archive have both): otok puts it in eve
 Download `otok-<version>-linux-x64.tar.gz` from the [latest release](https://github.com/otok-dev/otok/releases/latest)
 and put `otok` on your `PATH`:
 
-```sh
-tar -xzf otok-0.4.0-linux-x64.tar.gz
-install -m 755 otok-0.4.0-linux-x64/otok ~/.local/bin/otok
-```
+<Code lang="sh" code={`tar -xzf otok-${OTOK_VERSION}-linux-x64.tar.gz
+install -m 755 otok-${OTOK_VERSION}-linux-x64/otok ~/.local/bin/otok`} />
 
 The binary needs only glibc and the GNU C++ runtime. The Linux target builds with GCC or Clang, and otok runs every
 build in [bubblewrap](https://github.com/containers/bubblewrap), so `bwrap` must be on the `PATH`:
@@ -69,9 +70,7 @@ or to check a release binary, build it yourself.
 **The source.** Every [release](https://github.com/otok-dev/otok/releases) has `otok-<version>.tar.gz` with its
 `.sha256`, the complete source with its submodule; or clone the tag:
 
-```sh
-git clone --recurse-submodules --branch v0.4.0 https://github.com/otok-dev/otok
-```
+<Code lang="sh" code={`git clone --recurse-submodules --branch v${OTOK_VERSION} https://github.com/otok-dev/otok`} />
 
 **What it needs.** A C++23 compiler (Visual Studio 2026, or the GCC and Clang of a current Linux, or Xcode's Clang),
 CMake 3.25 or later with Ninja, and a checkout of [vcpkg](https://github.com/microsoft/vcpkg), from which otok's

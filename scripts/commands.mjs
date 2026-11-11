@@ -1,11 +1,11 @@
 // Otok (c) Alexander A Pototskiy
 // SPDX-License-Identifier: CC0-1.0
 //
-// Writes src/content/docs/reference/commands.md from the help of an otok on the PATH (or OTOK=<program>):
-// run it after a release whose commands changed, and commit the result.
+// Writes src/content/docs/reference/commands.mdx from the help of an otok on the PATH (or OTOK=<program>), and its
+// version into src/otok.ts: run it after every release, and commit the result.
 //   node scripts/commands.mjs
 import { execFileSync } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const otok = process.env.OTOK ?? 'otok';
 const run = (...args) => execFileSync(otok, args, { encoding: 'utf8' }).replace(/\r\n/g, '\n').trimEnd();
@@ -47,3 +47,13 @@ ${maintainers.map(section).join('\n')}`;
 
 writeFileSync(new URL('../src/content/docs/reference/commands.mdx', import.meta.url), page);
 console.log(`commands.mdx: ${names.length} commands of ${version}`);
+
+// The release the site describes: the badge in the header and the versions on the install page.
+const release = version.match(/^otok (\d+\.\d+\.\d+)/)?.[1];
+if (!release) throw new Error(`no version in "${version}"`);
+const otokTs = new URL('../src/otok.ts', import.meta.url);
+const source = readFileSync(otokTs, 'utf8');
+const updated = source.replace(/OTOK_VERSION = '[^']*'/, `OTOK_VERSION = '${release}'`);
+if (updated === source && !source.includes(`OTOK_VERSION = '${release}'`)) throw new Error('no OTOK_VERSION in src/otok.ts');
+writeFileSync(otokTs, updated);
+console.log(`otok.ts: ${release}`);
