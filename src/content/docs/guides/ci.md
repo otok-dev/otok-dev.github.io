@@ -78,14 +78,42 @@ runner's Visual Studio builds the libraries:
         run: otok install --locked
 ```
 
+## Linux
+
+The install script puts otok on the runner. Builds run in bubblewrap, and Ubuntu 24.04 lets `bwrap` make its
+namespaces only once the restriction of unprivileged user namespaces is lifted (newer Ubuntu gives `bwrap` an
+AppArmor profile of its own):
+
+```yaml
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install otok
+        run: |
+          sudo apt-get install -y bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          curl -fsSL https://otok-dev.github.io/install.sh | sh -s -- --dir "$RUNNER_TEMP/otok"
+          echo "$RUNNER_TEMP/otok" >> "$GITHUB_PATH"
+
+      - name: otok's cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/otok
+          key: otok-${{ runner.os }}-${{ hashFiles('otok.lock') }}
+          restore-keys: otok-${{ runner.os }}-
+
+      - name: Libraries
+        run: otok install --locked
+```
+
+Where `bwrap` cannot make its namespaces, inside most Docker containers, otok stops before the first build and says
+so; there the container is the isolation, and `OTOK_SANDBOX=0` (or `--no-sandbox`) builds without the sandbox.
+
 ## Other systems
 
 The same pattern works anywhere: the cache is one directory (`OTOK_CACHE_DIR` moves it), and nothing in it depends on
 the path of the project. Inputs can be kept on your own servers too, see [Where inputs come from](/guides/fetch/).
-
-On Linux, builds run in bubblewrap: install it on the runner (`sudo apt-get install -y bubblewrap`). Where `bwrap`
-cannot make its namespaces, inside most Docker containers, otok stops before the first build and says so; there the
-container is the isolation, and `OTOK_SANDBOX=0` (or `--no-sandbox`) builds without the sandbox.
 
 When a build fails, otok prints the end of its log and keeps the whole log in the cache's `failed/` directory; with
 `--keep-build-dirs` it keeps the work directory too. Upload `failed/` as an artifact of a failed job.

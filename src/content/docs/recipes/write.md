@@ -129,6 +129,10 @@ When a build fails, otok prints the end of its log and keeps the whole log: `oto
 commands each slice runs, `-vv` their output, and `--keep-build-dirs` keeps the work directory of a failed build for
 you to look into.
 
+On Windows the paths `build.lua` gets (`slice.source`, `slice.prefix`, the dependencies' prefixes, toolchains) are on
+short drive letters that only otok and the build's processes see ([Install otok](/start/install/#windows)): use them
+as they are, and do not hand them to a program outside the build.
+
 ## Options and dependencies
 
 Options are declared in the recipe and read in `build.lua`:

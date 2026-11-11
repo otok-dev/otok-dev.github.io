@@ -1,6 +1,6 @@
 ---
 title: Install otok
-description: Install otok with Homebrew, Scoop or the release archive.
+description: Install otok with Homebrew, Scoop, the install script or the release archive.
 sidebar:
   order: 1
 ---
@@ -38,16 +38,39 @@ The Windows target builds with Visual Studio 2022 or 2026 and its *Desktop devel
 Builds run in an AppContainer, the sandbox of Windows, which needs no administrator rights. Keep `otok-sandbox.dll`
 beside `otok.exe` (Scoop and the release archive have both): otok puts it in every process of a build.
 
+The build tools of Windows fail on paths longer than 260 characters, whatever `LongPathsEnabled` says, and a library's
+sources, its dependencies and the cache add up to that quickly. So builds see the cache and their work directories
+through short drive letters, such as `R:\lz4-windows-x86_64\`: the first free letters, mapped for otok and the
+processes of its builds only, never for the rest of the system, and gone when otok exits. Paths in a build's log are
+written with them; its first lines name the directory behind each letter. `--no-virtual-paths` (or
+`virtual-paths = false` in [`config.toml`](/reference/config/)) gives builds the real paths.
+
 ## Linux
 
-Download `otok-<version>-linux-x64.tar.gz` from the [latest release](https://github.com/otok-dev/otok/releases/latest)
+One command installs the latest release in `~/.local/bin`, and updates it when run again:
+
+```sh
+curl -fsSL https://otok-dev.github.io/install.sh | sh
+```
+
+The release binary is static, with [musl](https://musl.libc.org) built in: it loads no library, so it runs on every
+distribution, old or new, whatever its C library (glibc, or musl as on Alpine). There are binaries for x86-64 and
+ARM64; on other architectures, or on a system older than its kernel needs (Linux 3.x),
+[build otok from source](#build-from-source). otok finds the certificates of the common distributions by itself; where
+yours keeps them elsewhere, `SSL_CERT_FILE` names the file. The script checks the download against the release's
+`.sha256`; `--version 0.5.0` installs another release,
+`--dir /usr/local/bin` another directory (`sh -s -- --version 0.5.0`). By hand: download
+`otok-<version>-linux-x64.tar.gz` (or `-linux-arm64`) from the [latest release](https://github.com/otok-dev/otok/releases/latest)
 and put `otok` on your `PATH`:
 
 <Code lang="sh" code={`tar -xzf otok-${OTOK_VERSION}-linux-x64.tar.gz
 install -m 755 otok-${OTOK_VERSION}-linux-x64/otok ~/.local/bin/otok`} />
 
-The binary needs only glibc and the GNU C++ runtime. The Linux target builds with GCC or Clang, and otok runs every
-build in [bubblewrap](https://github.com/containers/bubblewrap), so `bwrap` must be on the `PATH`:
+[Homebrew](https://brew.sh) works on Linux too and builds otok from source: `brew install otok-dev/tap/otok`.
+
+The libraries otok builds are your system's, not otok's: they are compiled by its GCC or Clang against its C library,
+so on Alpine they link musl. otok runs every build in [bubblewrap](https://github.com/containers/bubblewrap), so
+`bwrap` must be on the `PATH`:
 
 ```sh
 sudo apt install git build-essential bubblewrap
@@ -83,7 +106,7 @@ The scripts that build the release binaries are in the source, `tools/release/`;
 release tag (`.github/workflows/release.yml`). Run the one of your system, with `VCPKG_ROOT` naming your vcpkg:
 
 ```sh
-VCPKG_ROOT=~/vcpkg tools/release/linux-x64.sh        # Linux: build/release-linux/
+VCPKG_ROOT=~/vcpkg tools/release/linux.sh            # Linux, on Alpine: build/release-linux/
 VCPKG_ROOT=~/vcpkg tools/release/macos-universal.sh  # macOS: build/release-macos/
 ```
 
@@ -91,8 +114,8 @@ VCPKG_ROOT=~/vcpkg tools/release/macos-universal.sh  # macOS: build/release-maco
 $env:VCPKG_ROOT = "C:\vcpkg"; tools\release\windows-x64.ps1   # Windows: build\release-windows\
 ```
 
-Each builds otok without its tests, checks that it loads only the system's own libraries, and packs it as the release
-does.
+Each builds otok without its tests, checks that it loads only the system's own libraries (on Linux none: the
+binary is static), and packs it as the release does.
 
 ### With CMake
 
