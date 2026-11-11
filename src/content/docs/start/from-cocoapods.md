@@ -2,7 +2,7 @@
 title: Coming from CocoaPods
 description: What a Podfile becomes in otok, and what works differently.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 CocoaPods' central repository of podspecs, trunk, becomes read-only on December 2, 2026

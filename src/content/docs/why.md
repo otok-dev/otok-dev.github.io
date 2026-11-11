@@ -137,7 +137,8 @@ otok runs every build in a sandbox, on macOS, Linux and Windows:
 
 A build that tries anything else fails. The sandbox needs no administrator rights: Seatbelt on macOS, bubblewrap on
 Linux, an AppContainer on Windows. Where it cannot be made (Linux without `bwrap`), otok does not build unisolated on its
-own: it stops and says so, and `--no-sandbox` builds without it when you ask.
+own: it stops and says so, and `--no-sandbox` builds without it when you ask. [The build sandbox](/concepts/sandbox/)
+explains how it works, and why on Windows otok puts a DLL of its own into the processes of a build.
 
 ## Ready for the App Store
 

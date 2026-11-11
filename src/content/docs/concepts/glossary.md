@@ -2,7 +2,7 @@
 title: Glossary
 description: The words otok uses, what each means, with examples.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 ## Where libraries go

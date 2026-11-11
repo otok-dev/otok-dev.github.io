@@ -2,7 +2,7 @@
 title: Licenses
 description: What otok's license means for your app, and who licenses what.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 ## What otok generates is yours
