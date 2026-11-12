@@ -18,6 +18,21 @@ The lock must already hold the runner's system: a lock made on a Mac fails `--lo
 `otok install` has run once on Windows and that change is committed
 ([the lock across machines](/guides/targets/#the-lock-across-machines)).
 
+## The key of the cache
+
+A library is found in otok's cache only when everything that went into its build is the same: the lock's versions and
+recipes, but also the project's flags and options in `otok.toml`, which the lock does not hold, and the toolchain of the
+runner. Key the CI cache by all three:
+
+- `otok.toml` and `otok.lock` (`hashFiles('otok.toml', 'otok.lock')`);
+- the toolchain's version: Xcode on macOS, MSVC on Windows, the compiler on Linux, read in a step before the cache.
+
+`actions/cache` saves the cache only when no cache had the exact key. With a key of the lock alone, a changed flag or a
+new Xcode of the runner's image restores the old cache under the same key: otok builds the libraries again, as it must,
+and the cache is never saved with them, so every later run builds them again too. With the toolchain and `otok.toml` in
+the key, such a run misses the key, restores the newest older cache through `restore-keys` (whatever did not change
+comes from it), and saves the new one.
+
 ## GitHub Actions on macOS
 
 ```yaml
@@ -30,12 +45,18 @@ jobs:
       - name: Install otok
         run: brew install otok-dev/tap/otok
 
+      - name: Toolchain
+        id: toolchain
+        run: echo "id=$(xcodebuild -version | tr -cs '[:alnum:].' '-')" >> "$GITHUB_OUTPUT"
+
       - name: otok's cache
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/otok
-          key: otok-${{ runner.os }}-${{ hashFiles('otok.lock') }}
-          restore-keys: otok-${{ runner.os }}-
+          key: otok-${{ runner.os }}-${{ steps.toolchain.outputs.id }}-${{ hashFiles('otok.toml', 'otok.lock') }}
+          restore-keys: |
+            otok-${{ runner.os }}-${{ steps.toolchain.outputs.id }}-
+            otok-${{ runner.os }}-
 
       - name: Libraries
         run: otok install --locked
@@ -44,14 +65,10 @@ jobs:
         run: xcodebuild -scheme App -destination 'generic/platform=iOS Simulator' build
 ```
 
-The cache is keyed by the lock, with the newest older cache restored when the lock changed: libraries that did not
-change come from it, and only the rest is built. A build is found in the cache only for the same toolchain, so a runner
-with another Xcode builds again; that is correct, not a miss to fix.
-
 ## Windows
 
-Download the release's zip and put its directory on the `PATH` (`otok-sandbox.dll` stays beside `otok.exe`); the
-runner's Visual Studio builds the libraries:
+Download the release's zip, check it against the `.sha256` beside it, and put its directory on the `PATH`
+(`otok-sandbox.dll` stays beside `otok.exe`); the runner's Visual Studio builds the libraries:
 
 ```yaml
     runs-on: windows-2025
@@ -63,16 +80,34 @@ runner's Visual Studio builds the libraries:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download --repo otok-dev/otok --pattern 'otok-*-windows-x64.zip' --dir $env:RUNNER_TEMP
-          Expand-Archive "$env:RUNNER_TEMP\otok-*-windows-x64.zip" -DestinationPath "$env:RUNNER_TEMP\otok"
-          "$env:RUNNER_TEMP\otok" >> $env:GITHUB_PATH
+          # the latest release, never a release candidate; or name one: $version = '0.5.7'
+          $version = (gh release view --repo otok-dev/otok --json tagName -q .tagName).TrimStart('v')
+          $name = "otok-$version-windows-x64"
+          $dir = Join-Path $env:RUNNER_TEMP otok
+          $url = "https://github.com/otok-dev/otok/releases/download/v$version/$name.zip"
+          Invoke-WebRequest $url -OutFile "$dir.zip"
+          # into a file: GitHub serves the .sha256 as binary, whose .Content would be bytes
+          Invoke-WebRequest "$url.sha256" -OutFile "$dir.zip.sha256"
+          $expected = ((Get-Content -Raw "$dir.zip.sha256").Trim() -split '\s+')[0].ToLowerInvariant()
+          if ((Get-FileHash -Algorithm SHA256 "$dir.zip").Hash.ToLowerInvariant() -ne $expected) { throw "otok: sha256 mismatch" }
+          Expand-Archive "$dir.zip" -DestinationPath $dir
+          (Get-ChildItem $dir -Recurse -Filter otok.exe | Select-Object -First 1).DirectoryName >> $env:GITHUB_PATH
+
+      - name: Toolchain
+        id: toolchain
+        shell: pwsh
+        run: |
+          $vs = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          "id=msvc-$((Get-ChildItem "$vs\VC\Tools\MSVC" | Sort-Object Name -Descending | Select-Object -First 1).Name)" >> $env:GITHUB_OUTPUT
 
       - name: otok's cache
         uses: actions/cache@v4
         with:
           path: ~\AppData\Local\otok\cache
-          key: otok-${{ runner.os }}-${{ hashFiles('otok.lock') }}
-          restore-keys: otok-${{ runner.os }}-
+          key: otok-${{ runner.os }}-${{ steps.toolchain.outputs.id }}-${{ hashFiles('otok.toml', 'otok.lock') }}
+          restore-keys: |
+            otok-${{ runner.os }}-${{ steps.toolchain.outputs.id }}-
+            otok-${{ runner.os }}-
 
       - name: Libraries
         run: otok install --locked
@@ -96,12 +131,18 @@ AppArmor profile of its own):
           curl -fsSL https://otok-dev.github.io/install.sh | sh -s -- --dir "$RUNNER_TEMP/otok"
           echo "$RUNNER_TEMP/otok" >> "$GITHUB_PATH"
 
+      - name: Toolchain
+        id: toolchain
+        run: echo "id=$(cc --version | head -n 1 | tr -cs '[:alnum:].' '-')" >> "$GITHUB_OUTPUT"
+
       - name: otok's cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/otok
-          key: otok-${{ runner.os }}-${{ hashFiles('otok.lock') }}
-          restore-keys: otok-${{ runner.os }}-
+          key: otok-${{ runner.os }}-${{ steps.toolchain.outputs.id }}-${{ hashFiles('otok.toml', 'otok.lock') }}
+          restore-keys: |
+            otok-${{ runner.os }}-${{ steps.toolchain.outputs.id }}-
+            otok-${{ runner.os }}-
 
       - name: Libraries
         run: otok install --locked
@@ -110,10 +151,34 @@ AppArmor profile of its own):
 Where `bwrap` cannot make its namespaces, inside most Docker containers, otok stops before the first build and says
 so; there the container is the isolation, and `OTOK_SANDBOX=0` (or `--no-sandbox`) builds without the sandbox.
 
+## When a build fails
+
+otok prints the end of the build's log and keeps the whole log in the cache's `failed/` directory. With
+`OTOK_KEEP_BUILD_DIRS=1` (or `--keep-build-dirs`) it keeps the build's work directory there too, which holds
+`sandbox.log`: what the sandbox refused the build, often the cause when a build passes on your machine and fails on the
+runner. Upload those files, not the whole work directory:
+
+```yaml
+      - name: Libraries
+        env:
+          OTOK_KEEP_BUILD_DIRS: 1
+        run: otok install --locked
+
+      - name: Logs of failed builds
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: otok-failed-builds
+          path: |
+            ~/AppData/Local/otok/cache/failed/*/build.log
+            ~/AppData/Local/otok/cache/failed/*/key.txt
+            ~/AppData/Local/otok/cache/failed/*/sandbox.log
+          if-no-files-found: ignore
+```
+
+(The paths are those of the Windows cache; on macOS and Linux use the cache's directory of the examples above.)
+
 ## Other systems
 
 The same pattern works anywhere: the cache is one directory (`OTOK_CACHE_DIR` moves it), and nothing in it depends on
 the path of the project. Inputs can be kept on your own servers too, see [Where inputs come from](/guides/fetch/).
-
-When a build fails, otok prints the end of its log and keeps the whole log in the cache's `failed/` directory; with
-`--keep-build-dirs` it keeps the work directory too. Upload `failed/` as an artifact of a failed job.

@@ -52,6 +52,20 @@ The other ways to isolate a process on Windows did not do the job:
 - other sandboxes that run tools in an AppContainer make it work by changing the permissions of `\Device\Null` as an
   administrator, again after every boot.
 
+### Toolchains outside Program Files
+
+A toolchain that is not in `Program Files` or the Windows Kits, such as an Android NDK, an LLVM or an `xwin` directory
+on another drive, has no entry for containers, and the build could not run its compiler. otok checks this before the
+first build, with the same rules the kernel applies to the container, and stops with the paths it cannot read, what
+needs each, and a command to let the container read it, to run once as the owner of the directory or an administrator:
+
+```
+icacls "S:\Developments\Android\ndk\30.0.14904198" /grant "*S-1-15-2-…:(OI)(CI)(RX)"
+```
+
+The SID is that of the `otok.build` container, the same for every build of your account. otok does not run the command
+itself, since it never changes the permissions of your files; without it, `--no-sandbox` builds as before.
+
 ## Why a DLL
 
 Build tools were written for processes that may open anything their user may. In an AppContainer many of them fail on
@@ -90,6 +104,7 @@ What it answers, one finding of the tests each:
 | Cygwin's `fork` and its process links | gives the container the access to its own processes that Cygwin sets for you |
 | asks which devices the drive letters are, or the attributes of a drive's root | answers from a table and handles otok made outside |
 | `mkdir -p` passing through the directories above the work directory | gives handles that let it pass through exactly those, without listing or reading them |
+| looks up each directory above its compiler, from the drive's root down (Boost's `b2`, LLVM's tools) | answers for the directories on the way to the toolchain: a listing of one shows only the next name on that way |
 | MSVC's compiler connects to `mspdbsrv` | asks for the server as you in this container, and only for the container's own servers |
 | MSVC starts its telemetry (`VCTIP.EXE`) | does not start it: without the network it stalls the compiler for seconds |
 | uses otok's jobserver, which shares the cores among the builds | finds it where otok made it |
@@ -130,7 +145,8 @@ one to none.
   the sandbox.
 - **What exists outside.** A build can tell whether a path it guesses exists outside the sandbox, as the kernel answers
   "not found" and "access denied" differently, but it can neither list a directory nor read a file there. (Seatbelt on
-  macOS shows such metadata too.)
+  macOS shows such metadata too.) It also sees the names of the directories on the way to its toolchains (`Program
+  Files` in a listing of `C:\`), which its tools look up; nothing beside them.
 - **64-bit processes.** A 32-bit program in a build runs in the container without the DLL's fixes.
 - **Cost.** Ending a process in an AppContainer costs the kernel a little more; builds take about a tenth longer than
   without the sandbox. Rarely, after long uptime, Windows gets into a state where it costs far more: otok measures it

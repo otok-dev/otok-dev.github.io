@@ -38,6 +38,8 @@ The Windows target builds with Visual Studio 2022 or 2026 and its *Desktop devel
 Builds run in an AppContainer, the sandbox of Windows, which needs no administrator rights. Keep `otok-sandbox.dll`
 beside `otok.exe` (Scoop and the release archive have both): otok puts it in every process of a build, so that the
 build tools run unchanged in the container ([what it does, and why](/concepts/sandbox/#windows-an-appcontainer)).
+A toolchain elsewhere than `Program Files`, such as an NDK on another drive, must be made readable to the container
+once ([how](/concepts/sandbox/#toolchains-outside-program-files)).
 
 The build tools of Windows fail on paths longer than 260 characters, whatever `LongPathsEnabled` says, and a library's
 sources, its dependencies and the cache add up to that quickly. So builds see the cache and their work directories
