@@ -43,9 +43,19 @@ once ([how](/concepts/sandbox/#toolchains-outside-program-files)).
 
 The build tools of Windows fail on paths longer than 260 characters, whatever `LongPathsEnabled` says, and a library's
 sources, its dependencies and the cache add up to that quickly. So builds see the cache and their work directories
-through short drive letters, such as `R:\lz4-windows-x86_64\`: the first free letters, mapped for otok and the
+through short drive letters, such as `P:\lz4-windows-x86_64\`: the first free letters, mapped for otok and the
 processes of its builds only, never for the rest of the system, and gone when otok exits. Paths in a build's log are
-written with them; its first lines name the directory behind each letter. `--no-virtual-paths` (or
+written with them; its first lines name the directory behind each letter, one for the cache and one for the work
+directories of the builds:
+
+```
+otok: O: is C:/Users/me/AppData/Local/otok/cache
+otok: P: is C:/Users/me/AppData/Local/otok/cache/tmp/12345-1f2e3d4c/build
+```
+
+So `P:\lz4-windows-x86_64\build\` further down the log is
+`C:\Users\me\AppData\Local\otok\cache\tmp\12345-1f2e3d4c\build\lz4-windows-x86_64\build\`. These lines are notes for
+the reader, not commands: the letters exist before the build starts. `--no-virtual-paths` (or
 `virtual-paths = false` in [`config.toml`](/reference/config/)) gives builds the real paths.
 
 ## Linux
