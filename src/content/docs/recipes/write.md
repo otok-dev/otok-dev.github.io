@@ -178,6 +178,10 @@ libraries = []
 link = { runtime = "c++" }
 ```
 
+`link = { runtime = "c++" }` says that the product needs the C++ standard library, without naming it: otok links
+the target's (libc++ on Apple platforms, libstdc++ on Linux) where a consumer's linker would not on its own, in the
+SwiftPM package and, in `otok-config.cmake`, for a target that CMake links with the C or Swift driver.
+
 ```lua
 function build(slice, options, deps)
     otok.copy(slice.source .. "/include/toml++", slice.prefix .. "/include/toml++")
