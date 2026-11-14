@@ -13,7 +13,8 @@ otok reads `otok.toml` and the lock, and looks the recipes up in the [index](htt
 git and directories, for recipes named so). It chooses a version of every library, the ones they depend on included,
 that satisfies every constraint, every option request, every platform and license policy, and keeps the versions the
 lock already has. Tools the recipes build with (CMake, Ninja, Python, …) are resolved the same way, separately: a tool
-runs on your machine and never reaches your app.
+runs on your machine and never reaches your app. A tool your own build runs, such as `protoc`, is resolved so too when
+`otok.toml` delivers it ([Tools for your own build](/guides/tools/)).
 
 Resolution happens before anything is downloaded: an unknown option, a platform a recipe does not support or two
 libraries asking for different options of a third is an error at once, naming who asked for what.
@@ -58,6 +59,8 @@ The slices of a library are combined into what its target delivers:
 The packages are copied into the output directory, `Otok/` by default, with what your build reads: for Apple a
 `Package.swift` with a product per recipe product and an `otok-config.cmake`. A package that did not change is not
 copied again, so your build sees the same files. `Acknowledgements.md` lists every library with its license texts.
+The tools the project delivers go to `Otok/tools/`, with `otok-tools.cmake`, `otok-tools.props` and `otok-tools.toml`
+naming their programs for your build.
 
 otok owns the output directory: it removes what the project no longer has, and writes only into a directory that is
 empty or was made by otok.

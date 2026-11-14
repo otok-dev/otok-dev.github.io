@@ -159,6 +159,32 @@ default-recipe = "apotocki/zlib"
 when = { option = "zlib" }
 ```
 
+## Tools
+
+A recipe can also build programs that run on the build machine: a code generator, a compiler. Other recipes then
+run them during their builds, and projects can deliver them to their own builds
+([Tools for your own build](/guides/tools/)). Name the programs in `[tool]`:
+
+```toml
+[tool]
+programs = ["protoc"]
+```
+
+A tool is built in the *tool slice*: for the build machine, static, in release, with `slice.is_tool` true. A recipe
+that is both a library and a tool builds its programs there only, and returns them beside its libraries:
+
+```lua
+local out = { libraries = libraries, headers = slice.prefix .. "/include" }
+if slice.is_tool then
+    out.programs = { protoc = slice.prefix .. "/bin/protoc" .. (slice.os == "windows" and ".exe" or "") }
+end
+return out
+```
+
+Tool slices are built by the target of the machine's system (`macosx` of `apple` on a Mac, `linux`, `windows`), so a
+tool for every machine needs a variant for each of these three. `apotocki/protobuf` is an example of a library that is
+also a tool.
+
 ## Other targets
 
 This recipe is for Apple platforms. The same library for Windows is a second recipe of the same name, its variant

@@ -81,28 +81,20 @@ Chooses the recipe, version and options of a tool the recipes build with (CMake,
 `version`, `prerelease`, `options`, `source`, flags and standards, as in `[deps]`. A tool no recipe uses is a warning,
 unless the project delivers it.
 
-`deliver = true` gives a tool to your own build: a compiler of your scripts, a code generator. otok builds it for the
-machine, though no recipe uses it, locks it, and copies it into `Otok/tools/<library>/` after the libraries;
-`Otok/tools/otok-tools.toml` names its programs, relative to the file:
+`deliver = true` gives the tool to your own build (a code generator such as `protoc`, a compiler of your scripts): otok
+builds it for the machine though no recipe uses it, locks it, and copies it into `Otok/tools/<library>/` after the
+libraries, with `otok-tools.cmake` (`Otok_TOOL_<program>`), `otok-tools.props` (`$(OtokTool_<program>)`) and
+`otok-tools.toml` naming its programs. See [Tools for your own build](/guides/tools/).
 
 ```toml
-[tool-deps.my-compiler]
-recipe = { git = "https://example.com/recipes.git", rev = "<commit>", path = "my-compiler" }
+[tool-deps.protobuf]
+recipe = "apotocki/protobuf"
+version = "= 36.2"
 deliver = true
 ```
 
-```toml
-# Otok/tools/otok-tools.toml
-format = 1
-
-[programs."my-compiler"]
-"my-compiler" = "my-compiler/bin/my-compiler.exe"
-```
-
-The recipe is a tool recipe (`[tool] programs`). Tools are built static and in release, so the copied programs need
-nothing beside them. A tool is copied again only when it changed, and removed when `deliver` is gone. A program that is
-a script run by another tool (Meson by Python) cannot be delivered. `otok.dev.toml` builds a delivered tool from
-working trees like any other ([Dev builds](/guides/dev-builds/)).
+`cxx-standard` and `c-standard` here apply to that tool. Without them a tool and the libraries it links get the lowest
+standard their recipes allow, as the libraries of a target do.
 
 ## `[profile.<name>]`
 

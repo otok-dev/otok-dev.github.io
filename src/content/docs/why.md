@@ -69,7 +69,9 @@ colleague's and CI.
 
 `otok.lock` records every library's version, the recipe by the hash of its files, the source by its hash or commit,
 and the same for the tools that build it, CMake and Ninja included: they come from recipes too, not from whatever is
-installed. Another machine running `otok install --locked` builds exactly that, or stops and says what differs.
+installed. The same goes for the programs your own build runs, such as `protoc`: otok builds them for each machine
+from recipes and puts them beside the libraries ([Tools for your own build](/guides/tools/)). Another machine
+running `otok install --locked` builds exactly that, or stops and says what differs.
 
 ## Recipes you can read
 
