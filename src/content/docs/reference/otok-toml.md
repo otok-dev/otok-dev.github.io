@@ -74,6 +74,7 @@ A library your project uses. The table's name is the library's name.
 | `cflags`, `cxxflags`, `ldflags` | Flags for this library. |
 | `source` | `{ path = "<dir>" }`: build from a local source instead of the recipe's. |
 | `bundle-data` | `true`: the library's data files are also resources of its products (Apple). |
+| `deliver` | `["protoc"]`, or `true` for all: the programs of the library's recipe, at the library's version, built for this machine into `Otok/tools/`. See [Tools for your own build](/guides/tools/). |
 
 ## `[tool-deps.<library>]`
 
@@ -81,15 +82,16 @@ Chooses the recipe, version and options of a tool the recipes build with (CMake,
 `version`, `prerelease`, `options`, `source`, flags and standards, as in `[deps]`. A tool no recipe uses is a warning,
 unless the project delivers it.
 
-`deliver = true` gives the tool to your own build (a code generator such as `protoc`, a compiler of your scripts): otok
-builds it for the machine though no recipe uses it, locks it, and copies it into `Otok/tools/<library>/` after the
-libraries, with `otok-tools.cmake` (`Otok_TOOL_<program>`), `otok-tools.props` (`$(OtokTool_<program>)`) and
-`otok-tools.toml` naming its programs. See [Tools for your own build](/guides/tools/).
+`deliver` gives a tool to your own build (a code generator, a compiler of your scripts): otok builds it for the machine
+though no recipe uses it, locks it, and copies it into `Otok/tools/<library>/` after the libraries, with
+`otok-tools.cmake` (`Otok_TOOL_<program>`), `otok-tools.props` (`$(OtokTool_<program>)`) and `otok-tools.toml` naming
+its programs: `true` for all the programs of the recipe, or a list of them. A tool of a library in `[deps]`, such as
+`protoc`, is delivered from there instead, so that both have one version; a `[tool-deps]` entry of the same recipe
+beside it then only chooses the tool's options and flags. See [Tools for your own build](/guides/tools/).
 
 ```toml
-[tool-deps.protobuf]
-recipe = "apotocki/protobuf"
-version = "= 36.2"
+[tool-deps.annium-compile]
+recipe = { git = "https://example.com/recipes.git", rev = "<commit>", path = "annium-compile" }
 deliver = true
 ```
 

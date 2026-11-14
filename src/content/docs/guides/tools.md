@@ -13,7 +13,7 @@ way, so it does not have to be installed by hand on every developer's machine an
 ## protoc for a project that uses Protocol Buffers
 
 The runtime of Protocol Buffers is a library of the app. `protoc`, which turns `.proto` files into C++, is a tool of
-the build machine. Both come from the recipe `apotocki/protobuf`:
+the build machine. Both come from the recipe `apotocki/protobuf`, so one entry asks for both:
 
 ```toml
 [otok]
@@ -22,21 +22,16 @@ format = 1
 [windows]
 build-on = ["windows/msvc"]
 
-# the runtime the app links
 [deps.protobuf]
 recipe = "apotocki/protobuf"
-version = "= 36.2"
-
-# protoc of the same version, for this machine, in Otok/tools/
-[tool-deps.protobuf]
-recipe = "apotocki/protobuf"
-version = "= 36.2"
-deliver = true
+version = "~> 36.2"
+deliver = ["protoc"]   # and protoc of the same version, for this machine
 ```
 
-`deliver = true` asks otok to build the tool for this machine, even though no recipe needs it, and to copy it into
-your project. `otok install` builds the runtime into `Otok/protobuf/`, as usual, and `protoc` into
-`Otok/tools/protobuf/`:
+`deliver` asks otok to build the library's recipe also as a tool for this machine, and to copy it into your project.
+The tool has exactly the version the library got, so the generated code always matches the runtime it is compiled
+against: `otok update` moves both together. `otok install` builds the runtime into `Otok/protobuf/`, as usual, and
+`protoc` into `Otok/tools/protobuf/`:
 
 ```text
 Otok/
@@ -49,8 +44,8 @@ Otok/
     └── otok-tools.toml    the same paths for scripts
 ```
 
-Give both entries the same `version`. `[deps]` and `[tool-deps]` are resolved separately: with `~> 36.2` in one and
-`>= 36` in the other, the runtime and the generated code could come from different versions of Protocol Buffers.
+`deliver` lists the programs your build runs. A recipe may build several (`otok info apotocki/protobuf` shows its
+`[tool] programs`); `deliver = true` takes all of them. A name the recipe does not build is an error.
 
 ### Using it from CMake
 
@@ -116,13 +111,29 @@ protoc=Otok/tools/$(sed -n 's/^"protoc" = "\(.*\)"$/\1/p' Otok/tools/otok-tools.
 "$protoc" --cpp_out=gen -I proto proto/hello.proto
 ```
 
+## A tool on its own
+
+A tool that is not a library of your app, such as a compiler of your project's scripts, is delivered from
+`[tool-deps]`, with the same `deliver`:
+
+```toml
+[tool-deps.annium-compile]
+recipe = { git = "https://example.com/recipes.git", rev = "<commit>", path = "annium-compile" }
+deliver = true
+```
+
+A `[tool-deps.protobuf]` entry beside `[deps.protobuf]` is not needed. Add one only to choose the options, flags or
+standard of the tool: the library and its tool are separate builds, and the options of `[deps.protobuf]` are the
+library's alone. It names the same `recipe`, and its `version` must allow the one the library gets.
+
 ## How it behaves
 
 - **The machine's own build.** A delivered tool is built for the machine `otok install` runs on: a Windows program on
   Windows, a macOS one on a Mac. A project built on several systems locks the tool for each of them, like the tools
   recipes build with.
 - **Nothing beside it.** Tools are built static and in release, so `Otok/tools/<library>/` needs nothing but the
-  system's libraries. It holds whatever the recipe installs, not only `bin/`.
+  system's libraries. It holds whatever the recipe installs, not only `bin/` and not only the programs listed in
+  `deliver`; the files of the consumer name those listed.
 - **Up to date.** A tool is copied again only when it changed. One that is no longer delivered is removed, and
   without any delivered tool `Otok/tools/` is removed too. Add `Otok/` to `.gitignore`: it is made by `otok install`.
 - **In CI.** `otok install --locked` builds or fetches the same tool from the cache, so CI runs the `protoc` the
