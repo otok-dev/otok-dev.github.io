@@ -122,7 +122,8 @@ A named set of changes to the build, chosen with `--profile <name>`: other platf
 A program a recipe builds with, running on the build machine: CMake, Ninja, Python, Meson, Perl, make. Tools are built
 or downloaded by recipes of their own and pinned in the lock like libraries; they never reach your app. A **tool
 dependency** is a library or program a recipe needs on the build machine; `[tool-deps]` of `otok.toml` chooses their
-versions.
+versions. A tool your own build runs is **delivered** (`deliver = true`): copied into `Otok/tools/`, still not
+into your app ([`[tool-deps]`](/reference/otok-toml/#tool-depslibrary)).
 
 ## Recipes and the index
 
