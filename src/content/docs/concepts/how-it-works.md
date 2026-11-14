@@ -39,6 +39,12 @@ comes after those it depends on, and as many at once as the machine's processors
 - is checked: every library must be built for the slice's platform and architecture, and must not refer to otok's
   directories.
 
+The slices share `jobs` of `config.toml`, all logical CPUs by default: never more compilers run at once, however many
+slices build. Jobs go first to the slices that others wait for, then to those that were ready earlier. A slice that is
+configuring, which takes one job, leaves the rest to the slices that compile, and as compilations end their jobs move
+on to the slices ahead. A build tool without jobserver support keeps a fixed number of jobs until it ends, so otok
+starts it only once at least half of `jobs` are free; meanwhile the progress display shows its slice as `queued`.
+
 A slice is stored in the cache under a *key*: the hash of everything that made it, the recipe, the source, the
 options, the flags, the toolchain's identity and the keys of its dependencies. A slice whose key is in the cache is not
 built again, by this project or any other.

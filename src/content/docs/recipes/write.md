@@ -106,6 +106,13 @@ installs into `slice.prefix` with Ninja, and passes `BUILD_SHARED_LIBS` from the
 other helpers are `otok.meson`, `otok.autotools`, `otok.make` and `otok.b2`; `otok.run` runs any program, and
 `otok.copy`, `otok.write` and friends work on files inside the build's directories.
 
+Leave parallelism to the helpers: otok shares the machine's `jobs` among all the slices building at once, through a
+jobserver that Make and Ninja take compile jobs from, and through its own launcher for `b2`'s compilers. A tool without
+jobserver support gets a fixed `-j` when its command starts, at least half of `jobs`. A number you give (`jobs` of
+`otok.make`, or `-j` in `otok.run`) stays fixed and takes no part in the sharing: the build may then run more compilers
+than the machine has cores, or fewer than it could. If you run a build tool with `otok.run`, run it without `-j`: the
+environment already carries the jobserver for tools that understand it.
+
 The function returns the libraries by the names products use, and the headers.
 
 ## Build it
