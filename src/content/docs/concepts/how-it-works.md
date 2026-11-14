@@ -43,6 +43,9 @@ A slice is stored in the cache under a *key*: the hash of everything that made i
 options, the flags, the toolchain's identity and the keys of its dependencies. A slice whose key is in the cache is not
 built again, by this project or any other.
 
+A header-only library, or Boost without its compiled libraries, is built once per target instead: its headers are the
+same everywhere, so one slice without a compiler, `headers`, serves every platform, architecture and configuration.
+
 ## 4. Package
 
 The slices of a library are combined into what its target delivers:

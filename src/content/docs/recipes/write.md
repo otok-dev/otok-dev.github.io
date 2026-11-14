@@ -159,6 +159,71 @@ default-recipe = "apotocki/zlib"
 when = { option = "zlib" }
 ```
 
+## Header-only libraries
+
+A library that is only headers has a product without libraries, `libraries = []`, and a `build` that copies the
+headers into `slice.prefix`:
+
+```toml
+[[product]]
+name = "TomlPlusPlus"
+libraries = []
+link = { runtime = "c++" }
+```
+
+```lua
+function build(slice, options, deps)
+    otok.copy(slice.source .. "/include/toml++", slice.prefix .. "/include/toml++")
+    return { libraries = {}, headers = slice.prefix .. "/include" }
+end
+```
+
+Such headers are the same for every platform, architecture and configuration, so otok builds a package whose products
+are all header-only once per target, in one slice named `headers`, and gives it to every platform:
+
+```text
+$ otok install
+...
+built tomlplusplus 3.4.0 for headers (0.1 s)
+```
+
+That slice has no compiler: `slice.headers` is true, `slice.platform`, `slice.arch`, `slice.configuration` and
+`slice.linkage` are nil, `slice.toolchain` has only `env`, and `otok.cmake`, `otok.meson`, `otok.autotools`,
+`otok.make` and `otok.b2` refuse to run. `otok.run`, the file functions and the programs of `[toolchains]` work, and
+`build_tools` is not run. Its cache entry is shared by projects of every configuration, linkage and environment of
+the target.
+
+A library whose headers need a compiler to be made (a configure test that writes `config.h`) builds every slice as
+usual with `headers-slice = false` in `[recipe]`; `headers-slice = true` says the recipe expects one slice, and makes it
+an error when a product holding libraries is chosen.
+
+A library that can be header-only or compiled offers both, with an option and a product of headers only that the
+compiled product depends on, as [Boost's recipe](https://github.com/otok-dev/recipes/tree/main/recipes/boost/1.92) does:
+
+```toml
+[options.compiled]
+type = "bool"
+default = false
+doc = "Compile the implementation into a library, linked through TomlPlusPlusLib."
+
+[[product]]
+name = "TomlPlusPlus"
+libraries = []
+link = { runtime = "c++" }
+
+[[product]]
+name = "TomlPlusPlusLib"
+libraries = ["tomlplusplus"]
+headers = false              # its headers are those of TomlPlusPlus
+depends = ["TomlPlusPlus"]
+when = { option = "compiled" }
+```
+
+Without the option only `TomlPlusPlus` is chosen, and the package is built in one slice; with it, every slice is
+built. When the compiled library needs a definition in its consumers (`TOML_HEADER_ONLY=0`), write it into the
+installed headers in `build.lua`, so that every consumer sees it: a product's `defines` reach C++ consumers on Apple
+platforms only through Clang modules.
+
 ## Tools
 
 A recipe can also build programs that run on the build machine: a code generator, a compiler. Other recipes then

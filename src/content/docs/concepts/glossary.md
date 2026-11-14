@@ -36,7 +36,8 @@ iPhone, `arm64_32` and `arm64` for Apple Watch, the ABIs `arm64-v8a`, `armeabi-v
 
 One build of a library: a platform and an architecture, written `<platform>-<arch>`, and a configuration.
 `iossim-arm64`, `watchos-arm64_32`, `android-arm64-v8a`, `windows-x86_64` (debug). otok calls a recipe's `build`
-function once per slice, each with a fresh copy of the source, and keeps each slice in the cache.
+function once per slice, each with a fresh copy of the source, and keeps each slice in the cache. A library whose
+products are all header-only is built once per target, in the slice `headers`, which serves every platform.
 
 ### Deployment version
 
