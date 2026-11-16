@@ -114,6 +114,20 @@ android {
 `otok-config.cmake` refuses an app whose runtime does not match its libraries'. Static libraries link into your
 native library and need neither.
 
+## The NDK of your app
+
+The libraries are compiled against the C++ headers of the NDK otok built them with, and link with that NDK or a newer
+one. `otok-config.cmake` refuses an app whose NDK is older, naming it:
+
+```text
+otok: the libraries of …/Otok were built with NDK 30.0.16248370 and link with it or a newer one, not with NDK
+29.0.14206865 at '…/ndk/29.0.14206865': build with that NDK or a newer one, or install the libraries with this one
+('android-ndk' in otok's config.toml or ANDROID_NDK_HOME) and run otok install
+```
+
+Gradle takes the NDK of `ndkVersion` in `build.gradle.kts`. Scripts can ask otok which NDK it uses: `otok metadata`
+gives its path and version in `toolchain` of the `android` target.
+
 ## Next
 
 - [Several targets in one project](/guides/targets/): the same `otok.toml` for your iOS app.
