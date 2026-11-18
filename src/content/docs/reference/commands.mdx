@@ -36,6 +36,7 @@ options:
       --no-sandbox             Build without the sandbox, unisolated: on a host that has none, or for a tool the sandbox stops
       --no-virtual-paths       Windows: build processes see the real, long paths of the cache and the work directories, not short drive letters
       --progress auto|plain    auto: the slices under way below the lines on a terminal; plain: lines only
+  -j, --jobs N                 Run at most N jobs at once (over 'jobs' of config.toml and OTOK_JOBS)
       --no-dev                 Build what otok.lock says, ignoring the working trees of otok.dev.toml
 ```
 
@@ -55,6 +56,7 @@ options:
       --no-sandbox             Build without the sandbox, unisolated: on a host that has none, or for a tool the sandbox stops
       --no-virtual-paths       Windows: build processes see the real, long paths of the cache and the work directories, not short drive letters
       --progress auto|plain    auto: the slices under way below the lines on a terminal; plain: lines only
+  -j, --jobs N                 Run at most N jobs at once (over 'jobs' of config.toml and OTOK_JOBS)
       --no-dev                 Build what otok.lock says, ignoring the working trees of otok.dev.toml
       --drop SYSTEM,...        Resolve the project for machines of these systems no longer (windows, linux, macos): remove their graphs from otok.lock
 ```
@@ -192,6 +194,7 @@ options:
       --no-sandbox           Build without the sandbox, unisolated: on a host that has none, or for a tool the sandbox stops
       --no-virtual-paths     Windows: build processes see the real, long paths of the cache and the work directories, not short drive letters
       --progress auto|plain  auto: the slices under way below the lines on a terminal; plain: lines only
+  -j, --jobs N               Run at most N jobs at once (over 'jobs' of config.toml and OTOK_JOBS)
 ```
 
 ## licenses

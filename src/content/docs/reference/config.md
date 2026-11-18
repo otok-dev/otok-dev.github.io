@@ -39,6 +39,8 @@ xcode = "/Applications/Xcode-beta.app"
 jobs = 8
 ```
 
+For one run only, `otok install -j4` takes four jobs whatever the file or `OTOK_JOBS` say.
+
 A machine of a company network, fetching only from the company's mirror:
 
 ```toml
@@ -57,7 +59,7 @@ starts an escape.
 
 | Key | Variable | Meaning |
 |---|---|---|
-| `jobs` | `OTOK_JOBS` | How many compiler processes run at once; all logical CPUs by default. |
+| `jobs` | `OTOK_JOBS` | How many compiler processes run at once; all logical CPUs by default. For one run, `--jobs N` (`-jN`) of `install`, `update` and `publish` goes over both. |
 | `cache-dir` | `OTOK_CACHE_DIR` | The [cache](/guides/cache/). |
 | `cache-max-age` | `OTOK_CACHE_MAX_AGE` | Days after which unused cache entries are removed, `30`; `0` never. |
 | `index` | `OTOK_INDEX` | The recipe index, `view+https://otok-dev.github.io/index` by default; `""` for none. |
