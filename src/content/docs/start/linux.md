@@ -73,7 +73,9 @@ Otok/
     lib/liblz4.a            release
     debug/lib/liblz4.a
     licenses/
+  cmake.d/lz4/              LZ4 under its usual CMake names
   otok-config.cmake         for CMake
+  otok-provider.cmake       answers find_package(lz4) with them
 ```
 
 ## Use it from CMake
@@ -117,6 +119,10 @@ LZ4 1.11.1
 one for the others) and the system libraries and defines the product needs. A configuration you did not build is
 served by the other one. The file checks, when CMake configures, that the output has libraries for the architecture
 you build for, and says what to do when it has not.
+
+A project that already finds LZ4 as `find_package(lz4 CONFIG)` and links `LZ4::lz4` keeps those lines: configure it
+with `-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=Otok/otok-provider.cmake` instead of the `find_package(Otok …)` call. See
+[CMake projects with find_package](/guides/cmake/).
 
 ## Shared objects
 

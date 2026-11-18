@@ -154,7 +154,8 @@ explains how it works, and why on Windows otok puts a DLL of its own into the pr
 ## Nothing touches your Xcode project
 
 otok writes one directory, `Otok/`, a Swift package you add to your project once. No generated workspace, no build
-phases, no project rewritten on every install. The same directory has an `otok-config.cmake` for CMake.
+phases, no project rewritten on every install. The same directory has an `otok-config.cmake` for CMake, and a CMake
+project that finds its libraries as `find_package(ZLIB)` keeps doing so ([CMake projects](/guides/cmake/)).
 
 ## Beyond Apple
 

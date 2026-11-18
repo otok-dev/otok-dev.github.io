@@ -66,7 +66,9 @@ The slices of a library are combined into what its target delivers:
 ## 5. Output
 
 The packages are copied into the output directory, `Otok/` by default, with what your build reads: for Apple a
-`Package.swift` with a product per recipe product and an `otok-config.cmake`. A package that did not change is not
+`Package.swift` with a product per recipe product and an `otok-config.cmake`; on every target the libraries' CMake
+packages under their usual names in `cmake.d/`, and `otok-provider.cmake`, which answers `find_package` with them. A
+package that did not change is not
 copied again, so your build sees the same files. `Acknowledgements.md` lists every library with its license texts.
 The tools the project delivers go to `Otok/tools/`, with `otok-tools.cmake`, `otok-tools.props` and `otok-tools.toml`
 naming their programs for your build.

@@ -66,7 +66,9 @@ Otok/
     lib/x86_64/lz4.lib      release
     debug/lib/x86_64/lz4.lib
     licenses/
+  cmake.d/lz4/              LZ4 under its usual CMake names
   otok-config.cmake         for CMake
+  otok-provider.cmake       answers find_package(lz4) with them
   otok.props, otok.targets  for Visual Studio projects
 ```
 
@@ -115,6 +117,11 @@ call it always.
 
 The file also checks what would otherwise fail at link time, and says what to do: an architecture or a configuration
 the output was not built for, or an MSVC older than the one that built the libraries.
+
+A project that already finds LZ4 as `find_package(lz4 CONFIG)` and links `LZ4::lz4` (from vcpkg, say) keeps those
+lines: configure it with `-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=Otok/otok-provider.cmake` instead of the
+`find_package(Otok …)` call, and keep `otok_copy_runtime_dlls` or its own way of copying DLLs. See
+[CMake projects with find_package](/guides/cmake/).
 
 ## Use it from a Visual Studio project
 

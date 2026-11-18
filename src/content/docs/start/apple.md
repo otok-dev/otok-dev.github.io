@@ -70,6 +70,8 @@ Otok/
   Acknowledgements.md       the licenses of everything built, for your about screen
   Acknowledgements.plist    the same as a Settings.bundle page
   otok-config.cmake         the same products for CMake
+  cmake.d/lz4/              LZ4 under its usual CMake names
+  otok-provider.cmake       answers find_package(lz4) with them
 ```
 
 ## Use it in Xcode
@@ -120,6 +122,10 @@ target_link_libraries(app PRIVATE otok::LZ4)
 ```
 
 `otok::LZ4` brings the XCFramework's slice for the platform you build for, its headers and its link settings.
+
+A project that already finds LZ4 as `find_package(lz4 CONFIG)` and links `LZ4::lz4` keeps those lines: configure it
+with `-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=Otok/otok-provider.cmake` instead of the `find_package(Otok …)` call. See
+[CMake projects with find_package](/guides/cmake/).
 
 ## Next
 

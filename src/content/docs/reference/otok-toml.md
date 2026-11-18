@@ -75,6 +75,7 @@ A library your project uses. The table's name is the library's name.
 | `source` | `{ path = "<dir>" }`: build from a local source instead of the recipe's. |
 | `bundle-data` | `true`: the library's data files are also resources of its products (Apple). |
 | `deliver` | `["protoc"]`, or `true` for all: the programs of the library's recipe, at the library's version, built for this machine into `Otok/tools/`. See [Tools for your own build](/guides/tools/). |
+| `cmake` | The library's CMake packages under their usual names, replacing the recipe's `[cmake]` tables: `{ ZLIB = { targets = { "ZLIB::ZLIB" = "ZLIB" } } }`, or `false` for none. See [CMake projects with find_package](/guides/cmake/). |
 
 ## `[tool-deps.<library>]`
 

@@ -105,7 +105,8 @@ may produce several binaries (OpenSSL's `ssl` and `crypto`).
 
 What consumers of a library use, declared by its recipe: a set of its binaries, with their headers, defines, system
 libraries and, on Apple platforms, a module and a privacy manifest. `LZ4`; `OpenSSL`; Boost's `Boost` (the headers)
-and `BoostJson`, `BoostFilesystem`, … In Xcode you add products; in CMake you link `otok::<product>`.
+and `BoostJson`, `BoostFilesystem`, … In Xcode you add products; in CMake you link `otok::<product>`,
+or the names the library has in CMake (`ZLIB::ZLIB`), which link the products.
 
 ### Option
 

@@ -49,6 +49,8 @@ output 'Otok': 1 copied, 0 unchanged, 0 removed
 ```text
 app/Otok/
   otok-config.cmake         for CMake: Gradle's externalNativeBuild
+  cmake.d/lz4/              LZ4 under its usual CMake names
+  otok-provider.cmake       answers find_package(lz4) with them
   Acknowledgements.md       the licenses of everything built
   lz4/
     include/                lz4.h, lz4frame.h, ...
@@ -93,6 +95,19 @@ error when CMake configures, with the cure:
 ```text
 otok: …/Otok has no libraries for the architecture 'x86': add it to 'architectures' of [android] in otok.toml and
 run otok install
+```
+
+A native library that already finds LZ4 as `find_package(lz4 CONFIG)` and links `LZ4::lz4` keeps those lines: pass
+the provider instead of calling `find_package(Otok …)`. See [CMake projects with find_package](/guides/cmake/).
+
+```kotlin
+android {
+    defaultConfig {
+        externalNativeBuild {
+            cmake { arguments += "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=${file("Otok/otok-provider.cmake").absolutePath}" }
+        }
+    }
+}
 ```
 
 ## Dynamic libraries and the C++ runtime

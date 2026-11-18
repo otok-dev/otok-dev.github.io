@@ -166,6 +166,38 @@ default-recipe = "apotocki/zlib"
 when = { option = "zlib" }
 ```
 
+## CMake names
+
+CMake projects find cJSON as its own build installs it: `find_package(cJSON)`, which sets `CJSON_INCLUDE_DIRS` and
+`CJSON_LIBRARIES`. A `[cmake]` table gives such names to projects that use otok's provider
+([CMake projects with find_package](/guides/cmake/)), so they keep their `find_package` calls:
+
+```toml
+[cmake.cJSON]
+targets = { "cJSON::cjson" = "cJSON" }
+variables = { CJSON_INCLUDE_DIRS = { include = "cJSON" } }
+```
+
+The table's name is the package of `find_package`; each target of `targets` links the products it names, and the
+package's `_LIBRARIES` are its targets. A target name holds `::`, so that it cannot clash with a target of the
+consumer's own: cJSON's own `cjson` cannot be given, and `cJSON::cjson` is otok's. Three forms of a key cover the
+usual cases:
+
+| Key | The targets |
+|---|---|
+| `"ZLIB::ZLIB"` | that one |
+| `"ZLIB::{ZLIB,ZLIBSTATIC}"` | one per alternative of the braces; an alternative may be empty: `"LZ4::lz4{,_static,_shared}"` |
+| `"absl::*"` | every target of the form that the library's own build exports, read from its installed CMake files when it is packaged: for libraries with many targets, such as Abseil's two hundred |
+
+A pattern takes every target of its namespace, also those a library defines over its own dependencies
+(`CURL::OpenSSL_Crypto` of curl's package): such libraries list their targets. `components` gives the components of
+`find_package(<package> COMPONENTS …)` by the products each needs, and `variables` adds variables: a product name for
+its link items, `{ include = "<product>" }` for its include directories.
+
+A library known under two names, CMake's find module's and its own config's (`JPEG` and `libjpeg-turbo`), has a table
+for each. The names are data about the library, the same in every variant of the recipe; a project can replace them
+with `cmake` in its `[deps]` table.
+
 ## Header-only libraries
 
 A library that is only headers has a product without libraries, `libraries = []`, and a `build` that copies the
