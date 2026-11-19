@@ -101,8 +101,9 @@ function build(slice, options, deps)
 end
 ```
 
-`otok.cmake` configures the source with the slice's toolchain file (compilers, SDK, architecture, deployment version),
-installs into `slice.prefix` with Ninja, and passes `BUILD_SHARED_LIBS` from the linkage the project asked for. The
+`otok.cmake` configures the source with the slice's toolchain file (compilers, SDK, architecture, deployment version;
+the slice's flags for C and C++, and for Objective-C and assembly too, so a recipe passes no `CMAKE_OBJC_FLAGS` or
+`CMAKE_ASM_FLAGS` of its own), installs into `slice.prefix` with Ninja, and passes `BUILD_SHARED_LIBS` from the linkage the project asked for. The
 other helpers are `otok.meson`, `otok.autotools`, `otok.make` and `otok.b2`; `otok.run` runs any program, and
 `otok.copy`, `otok.write` and friends work on files inside the build's directories.
 
