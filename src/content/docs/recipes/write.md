@@ -81,7 +81,8 @@ libraries = ["cjson"]
   generator's `ninja`, and refuses to run without them declared.
 - `[[product]]`: what consumers get. Here one product, `cJSON`, holding the library `cjson`: on Apple platforms a
   module `cJSON` with all headers of the library. A recipe may have several products, and `defines`, system
-  libraries to link (`link = { libraries = ["z"] }`) and Apple frameworks (`apple = { frameworks = ["Security"] }`).
+  libraries to link (`link = { libraries = ["z"] }`) and Apple frameworks (`apple = { frameworks = ["Security"] }`), some of them under conditions
+  ([below](#system-libraries-and-frameworks)).
 
 ## build.lua
 
@@ -267,6 +268,31 @@ Without the option only `TomlPlusPlus` is chosen, and the package is built in on
 built. When the compiled library needs a definition in its consumers (`TOML_HEADER_ONLY=0`), write it into the
 installed headers in `build.lua`, so that every consumer sees it: a product's `defines` reach C++ consumers on Apple
 platforms only through Clang modules.
+
+## System libraries and frameworks
+
+A product names what its consumers link besides its own libraries: system libraries in `link`, Apple frameworks in
+`apple`. Either may hold only under a condition, written as a table with `when`:
+
+```toml
+[[product]]
+name = "Net"
+libraries = ["net"]
+link = { libraries = ["z", { library = "iconv", when = { option = "idn" } }] }
+apple = { frameworks = [
+    "CoreFoundation",
+    # the watchOS SDK has no SystemConfiguration
+    { framework = "SystemConfiguration", when = { not = { platform = ["watchos", "watchossim"] } } },
+    { framework = "Security", when = { option = "tls", is = "openssl" } },
+] }
+```
+
+The `when` of a framework tests options and the platform. It cannot tell a device from its simulator (`ios` and
+`iossim`, `tvos` and `tvossim`, `watchos` and `watchossim`, `xros` and `xrossim`), since SwiftPM's
+`.when(platforms:)` names them as one; Mac Catalyst (`catalyst`) is a platform of its own. `Package.swift` links such a
+framework on the platforms where it holds, and so does `otok-config.cmake`. A framework that holds on a platform whose
+SDK does not have it is a problem of the output: `otok install` warns of it, and `otok publish` refuses the recipe, so
+that apps do not find it out at link time.
 
 ## Tools
 
