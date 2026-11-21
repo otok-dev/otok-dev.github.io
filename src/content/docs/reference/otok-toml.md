@@ -53,7 +53,7 @@ An unknown key, a wrong type or a misspelled name is an error, reported with its
 | `build-on` | The build environments: required for `[windows]` (`windows/msvc`, `windows/clang-cl`, `linux/clang-cl`) and `[linux]` (`linux/gcc`, `linux/clang`). |
 | `output` | The output directory, `Otok` by default. |
 | `configurations` | `["release"]` by default; `["debug", "release"]` for Windows programs with debug builds. One for `[apple]`. |
-| `linkage` | `"static"` (default) or `"dynamic"`. |
+| `linkage` | `"static"` (default) or `"dynamic"`: a preference; a library whose recipe builds only the other linkage gets that one, with a note. See [Static or dynamic](/guides/options/#static-or-dynamic). |
 | `cflags`, `cxxflags`, `ldflags` | Flags for every library of the target. |
 | `c-standard`, `cxx-standard` | The C and C++ standard of every library of the target (`17`, `20`, `23`, …). |
 | `stl` | `[android]`: `"shared"` (default) or `"static"`, the C++ runtime of dynamic libraries. |
@@ -70,7 +70,7 @@ A library your project uses. The table's name is the library's name.
 | `prerelease` | `true` to allow pre-release versions. |
 | `options` | The recipe's options (`otok info <recipe>` lists them). |
 | `platforms` | Build this library for fewer platforms. |
-| `linkage` | `"static"` or `"dynamic"`, for this library. |
+| `linkage` | `"static"` or `"dynamic"`, for this library; its recipe must offer it. |
 | `cflags`, `cxxflags`, `ldflags` | Flags for this library. |
 | `source` | `{ path = "<dir>" }`: build from a local source instead of the recipe's. |
 | `bundle-data` | `true`: the library's data files are also resources of its products (Apple). |
@@ -102,8 +102,9 @@ standard their recipes allow, as the libraries of a target do.
 ## `[profile.<name>]`
 
 Changes chosen with `--profile <name>`: the target tables' `platforms`, `architectures`, `deployment`, flags,
-`configurations`, `linkage` and standards; `deps.<library>` `options`, `platforms`, flags and `linkage`;
-`tool-deps.<library>` `options` and flags. See [Profiles](/guides/options/#profiles).
+`configurations`, `linkage` and standards; `deps.<library>` `options`, `platforms`, flags and `linkage` (for a library
+not in `[deps]`, a dependency of a dependency, `linkage` alone); `tool-deps.<library>` `options` and flags. See
+[Profiles](/guides/options/#profiles).
 
 ## `[policy]`
 

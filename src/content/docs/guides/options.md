@@ -69,8 +69,46 @@ version = "~> 1.10"
 linkage = "static"
 ```
 
-The recipe must offer the linkage (`[recipe] linkage`); otherwise resolution fails. On Apple platforms a dynamic
-library is a framework inside its XCFramework, which Xcode embeds and signs in your app.
+A linkage you choose for one library, in its `[deps]` table, must be one its recipe offers (`[recipe] linkage`);
+otherwise resolution fails. The target table's linkage is a preference for all the others: a library whose recipe
+builds only the other linkage gets that one, and `otok install` says so. On Apple platforms a dynamic library is a
+framework inside its XCFramework, which Xcode embeds and signs in your app.
+
+### Static libraries inside dynamic ones
+
+A dynamic library holds a copy of the static libraries it links. Ask for dynamic curl on Apple, where the recipes of
+OpenSSL and libssh2 build static libraries only:
+
+```toml
+[apple]
+platforms = ["ios", "iossim", "macosx"]
+deployment = { ios = "16.0", macos = "13.0" }
+linkage = "dynamic"
+
+[deps.curl]
+recipe = "apotocki/curl"
+version = "~> 8.23"
+```
+
+```text
+note: libssh2: static, its recipe builds no dynamic library for 'apple'
+note: openssl: static, its recipe builds no dynamic library for 'apple'
+```
+
+curl's framework holds OpenSSL and libssh2, and otok hides their symbols in it: the framework exports curl's functions
+only, so another OpenSSL in your app cannot get calls meant for curl's, nor the reverse. The product `CURL` gives you
+their headers but not their code. If you call OpenSSL yourself, name it in `[deps]`, and you get its code a second time:
+two copies with their own global state, and an object of one (the `SSL_CTX` curl hands to a callback) is no object of
+the other. otok counts the copies:
+
+- a library static because its recipe has no dynamic build, which nobody chose, with two copies or more is an error,
+  and the output is not written;
+- a library you chose static (`linkage = "static"` in its `[deps]` table, or asked for by a recipe) with two copies or
+  more is a warning: you said so.
+
+The error names the ways out: `linkage = "static"` for the library to take the copies; `linkage = "static"` for the
+dynamic libraries holding it, so that none is inside them; or the library out of `[deps]` if you name it only for its
+version or flags. A dynamic library that is no dependency of your project is set in a profile (below).
 
 ## Configurations
 
@@ -163,3 +201,11 @@ A profile may change the platforms, architectures, deployment versions, configur
 options. It cannot add or remove libraries or change their versions or recipes: one `otok.lock` serves every profile,
 and `otok fetch` fetches the inputs of all of them at once. A profile's flags are added to the base flags; anything
 else it sets replaces the base value.
+
+A profile's `deps.<library>` names a library of `[deps]`, with one exception: the linkage of a library your project
+does not name, a dependency of a dependency, adds no library and may be set alone:
+
+```toml
+[profile.static-ssh.deps.libssh2]
+linkage = "static"
+```

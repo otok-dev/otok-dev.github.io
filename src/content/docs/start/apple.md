@@ -66,6 +66,7 @@ Otok/
   Package.swift             the products of all libraries: here LZ4
   Packages/lz4/
     lz4_lz4.xcframework     every platform's slices
+    lz4_lz4_headers.xcframework  their headers and module map
     shims/LZ4/              the product's privacy manifest and link settings
   Acknowledgements.md       the licenses of everything built, for your about screen
   Acknowledgements.plist    the same as a Settings.bundle page

@@ -168,6 +168,27 @@ default-recipe = "apotocki/zlib"
 when = { option = "zlib" }
 ```
 
+### Static dependencies of a dynamic library
+
+When your library is built dynamic and a dependency static, the dependency's code ends up inside your library, and otok
+hides its symbols there: `slice.toolchain.ldflags` of the slice carries `-Wl,--exclude-libs,<archives>` on Linux and
+Android and `-Wl,-load_hidden,<archive>` on Apple (a DLL exports only what it names). The helpers pass `ldflags` to the
+link. A build linking with commands of its own (nmake, OpenSSL's `Configure`, GN through `otok.run`) passes them itself,
+before its libraries: after the build otok compares what your library exports with what its static dependencies define,
+which `otok install` warns of and `otok publish` refuses.
+
+If the dependency's functions are part of your library's interface and must stay exported, say so; otherwise they are
+hidden even where your build exports them on purpose, and neither the linker nor otok's check tells:
+
+```toml
+[deps.pixman]
+version = ">= 0.40"
+default-recipe = "apotocki/pixman"
+export = true
+```
+
+Static libraries on Linux are built with `-fPIC`, so that they can be linked into a shared object.
+
 ## CMake names
 
 CMake projects find cJSON as its own build installs it: `find_package(cJSON)`, which sets `CJSON_INCLUDE_DIRS` and

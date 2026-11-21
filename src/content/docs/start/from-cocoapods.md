@@ -28,7 +28,7 @@ you ask, from one file ([Why otok](/why/)).
 | `Pods/` and the generated workspace | `Otok/`, a local Swift package |
 | `platform :ios, '15.0'` | `[apple] platforms` and `deployment` |
 | subspecs | products of a recipe, and its options |
-| `use_frameworks!` | `linkage = "dynamic"`, where the recipe offers it |
+| `use_frameworks!` | `linkage = "dynamic"` in `[apple]`: frameworks where the recipe offers them; the other libraries stay static, hidden inside the frameworks that link them |
 | `:path =>` | `recipe = { path = "…" }`, or `source = { path = "…" }` to build a recipe from your checkout |
 | `:git =>`, `:commit =>` | `recipe = { git = "…", rev = "<full commit>" }` |
 | `post_install` hooks | none: `otok.toml` is data, and nothing in it runs |
