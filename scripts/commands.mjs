@@ -1,8 +1,9 @@
 // Otok (c) Alexander A Pototskiy
 // SPDX-License-Identifier: CC0-1.0
 //
-// Writes src/content/docs/reference/commands.mdx from the help of an otok on the PATH (or OTOK=<program>), and its
-// version into src/otok.ts: run it after every release, and commit the result.
+// Writes src/content/docs/reference/commands.mdx from the help of an otok on the PATH (or OTOK=<program>), its version
+// into src/otok.ts and its skill for coding agents into public/skills/otok/SKILL.md: run it after every release, and
+// commit the result.
 //   node scripts/commands.mjs
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -57,3 +58,9 @@ const updated = source.replace(/OTOK_VERSION = '[^']*'/, `OTOK_VERSION = '${rele
 if (updated === source && !source.includes(`OTOK_VERSION = '${release}'`)) throw new Error('no OTOK_VERSION in src/otok.ts');
 writeFileSync(otokTs, updated);
 console.log(`otok.ts: ${release}`);
+
+// The skill for coding agents, as this otok writes it (`otok agent-skill`), served at /skills/otok/SKILL.md.
+const skill = execFileSync(otok, ['agent-skill', '--print'], { encoding: 'utf8' }).replace(/\r\n/g, '\n');
+if (!skill.startsWith('---\nname: otok\n')) throw new Error('otok agent-skill --print gave no skill');
+writeFileSync(new URL('../public/skills/otok/SKILL.md', import.meta.url), skill);
+console.log('SKILL.md: from otok agent-skill');

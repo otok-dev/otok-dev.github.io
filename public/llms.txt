@@ -19,7 +19,8 @@ For coding agents:
   and `options`, then `otok install --format json`.
 - Edit `otok.toml`, never `otok.lock`. Commit both; `Otok/` is generated.
 - The first install builds from source and can take many minutes; later ones use the machine's cache.
-- A skill for agents (Agent Skills format, `SKILL.md`) with the whole workflow:
+- A skill for agents (Agent Skills format, `SKILL.md`) with the whole workflow: `otok agent-skill` writes it into
+  `.claude/skills/otok/` of the project (`--user`: `~/.claude/skills/`; otok 0.5.35 or later), or download
   https://otok-dev.github.io/skills/otok/SKILL.md
 
 ## Docs

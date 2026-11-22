@@ -49,15 +49,26 @@ targets, outputs, packages, options and products. JSON output needs otok 0.5.34 
 `otok.toml` of each target, how the output is used from CMake, Xcode and Visual Studio, and what to do when a build
 fails. An agent that supports skills loads it when the project has an `otok.toml` or you ask for a native library.
 
-For Claude Code, for every project of yours:
+otok writes it, as the otok of your machine has it (otok 0.5.35 or later):
+
+```sh
+otok agent-skill            # .claude/skills/otok/SKILL.md of the project: commit it, and every agent there has it
+otok agent-skill --user     # ~/.claude/skills/otok/SKILL.md, for every project of yours
+otok agent-skill --dir DIR  # DIR/otok/SKILL.md, the skills directory of another agent
+otok agent-skill --print    # on standard output
+```
+
+`.claude/skills/` is where Claude Code looks; other agents that support the format read skills from directories of
+their own, and the file is the same. Run it again after updating otok: it says when the skill is up to date. With an
+older otok, download it:
 
 ```sh
 mkdir -p ~/.claude/skills/otok
 curl -fsSL https://otok-dev.github.io/skills/otok/SKILL.md -o ~/.claude/skills/otok/SKILL.md
 ```
 
-or for one project, committed with it, in `.claude/skills/otok/SKILL.md`. Other agents that support the format read
-skills from directories of their own; the file is the same. Fetch it again after updating otok.
+An agent that meets otok without the skill usually runs `otok --help` first, which tells it about `otok agent-skill`
+and [`/llms.txt`](/llms.txt).
 
 ## AGENTS.md
 
