@@ -23,7 +23,8 @@ public index: https://otok-dev.github.io/index/.
   code is 0 on success.
 - `--format json` needs otok 0.5.34 or later (`search` and `info`: 0.5.33). Check with `otok --version`; if it is
   older, tell the user to update otok (Homebrew `brew upgrade otok`, Scoop `scoop update otok`, Linux: run the
-  install script again).
+  install script again). `otok agent-skill` writes this skill as the otok of the machine has it: run it again after
+  updating otok.
 - Edit `otok.toml`, never `otok.lock`: otok writes the lock. Commit both. `Otok/` is generated: keep it in
   `.gitignore`.
 - The first `otok install` builds every library and the tools they need from source and can take many minutes (Boost,
