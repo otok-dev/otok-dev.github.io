@@ -130,6 +130,9 @@ with `-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=Otok/otok-provider.cmake` instead of th
 
 ## Next
 
+- [Examples](https://github.com/otok-dev/examples): a project per library, built for every Apple platform and used from CMake
+  ([lz4](https://github.com/otok-dev/examples/tree/main/libraries/lz4/basic)) and from a Swift package ([libpng](https://github.com/otok-dev/examples/tree/main/libraries/libpng/basic)), each checked on every
+  target.
 - [Coming from CocoaPods](/start/from-cocoapods/): what a Podfile becomes.
 - [Options, profiles and configurations](/guides/options/) of the libraries you build.
 - [Updating](/guides/lock/): `otok update` moves to newer versions and rewrites the lock.

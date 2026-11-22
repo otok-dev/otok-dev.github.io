@@ -145,6 +145,9 @@ gives its path and version in `toolchain` of the `android` target.
 
 ## Next
 
+- [Examples](https://github.com/otok-dev/examples): a project per library, built for every ABI and used from CMake
+  ([lz4](https://github.com/otok-dev/examples/tree/main/libraries/lz4/basic)) and from a Gradle app ([libpng](https://github.com/otok-dev/examples/tree/main/libraries/libpng/basic)), each checked on every
+  target.
 - [Several targets in one project](/guides/targets/): the same `otok.toml` for your iOS app.
 - [Options, profiles and configurations](/guides/options/).
 - The [`otok.toml` reference](/reference/otok-toml/).

@@ -56,6 +56,10 @@ ones, in this project or any other, take the builds from the cache.
 Commit `otok.toml` and `otok.lock`. The lock pins every version, recipe and source by its hash, so another machine
 running `otok install` builds exactly the same libraries. `Otok/` is generated: add it to `.gitignore`.
 
+Some builds make symbolic links, which Windows allows only with Developer Mode on (Settings > System > For
+developers) or to administrators. When a build fails because it was refused one, otok says so after the end of the
+build's log: turn Developer Mode on, or tell the recipe's authors, whose build can copy the file instead.
+
 The libraries are in `Otok/`:
 
 ```text
@@ -147,6 +151,8 @@ files from `Directory.Build.props` and `Directory.Build.targets` instead.
 
 ## Next
 
+- [Examples](https://github.com/otok-dev/examples): a project per library, used from CMake ([lz4](https://github.com/otok-dev/examples/tree/main/libraries/lz4/basic)) and from a
+  Visual Studio project ([libpng](https://github.com/otok-dev/examples/tree/main/libraries/libpng/basic)), each checked on every target.
 - [Options, profiles and configurations](/guides/options/) of the libraries you build.
 - [Updating](/guides/lock/): `otok update` moves to newer versions and rewrites the lock.
 - The [`otok.toml` reference](/reference/otok-toml/).

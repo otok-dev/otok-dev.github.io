@@ -78,6 +78,9 @@ android {
 
 In a CMake preset it is a cache variable, `"CMAKE_PROJECT_TOP_LEVEL_INCLUDES": "${sourceDir}/Otok/otok-provider.cmake"`.
 
+The [examples](https://github.com/otok-dev/examples) build every library this way: one [CMake project](https://github.com/otok-dev/examples/blob/main/consumers/cmake/CMakeLists.txt) with
+the usual `find_package` of each, on every target.
+
 ## What the provider does
 
 The provider sees every `find_package` of the project after its first `project()`:

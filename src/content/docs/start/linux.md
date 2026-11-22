@@ -170,6 +170,8 @@ musl.
 
 ## Next
 
+- [Examples](https://github.com/otok-dev/examples): a project per library, used from CMake ([lz4](https://github.com/otok-dev/examples/tree/main/libraries/lz4/basic)), each checked
+  on every target.
 - [Several targets in one project](/guides/targets/): one `otok.toml` for Linux and the other targets.
 - [Options, linkage and profiles](/guides/options/) of the libraries you build.
 - [Continuous integration](/guides/ci/): otok's cache in GitHub Actions and elsewhere.

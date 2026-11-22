@@ -110,6 +110,11 @@ The error names the ways out: `linkage = "static"` for the library to take the c
 dynamic libraries holding it, so that none is inside them; or the library out of `[deps]` if you name it only for its
 version or flags. A dynamic library that is no dependency of your project is set in a profile (below).
 
+A static library that only dynamic libraries hold, and that you do not name in `[deps]`, does not exist for your build:
+its headers and licenses stay in the output, but it has no products, `otok::` targets or CMake package of its own, and
+its archives are left out. `otok metadata` marks it `"hidden": true` in its output, so a script knows before
+`otok install`.
+
 ## Configurations
 
 Apple, Android and Linux builds are `release` unless you ask for more. On Windows a program built in Debug links the
