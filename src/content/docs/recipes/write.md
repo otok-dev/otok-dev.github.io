@@ -290,6 +290,27 @@ built. When the compiled library needs a definition in its consumers (`TOML_HEAD
 installed headers in `build.lua`, so that every consumer sees it: a product's `defines` reach C++ consumers on Apple
 platforms only through Clang modules.
 
+## Defines
+
+A product's `defines` are the macros its headers need in whoever includes them: a library's headers on Windows often
+declare its functions `dllimport` unless a macro says the library is static. A define may hold only for one linkage
+of the recipe's library, or for some options:
+
+```toml
+[[product]]
+name = "LZMA"
+libraries = ["lzma"]
+# lzma.h declares its functions dllimport unless LZMA_API_STATIC is defined
+defines = [{ define = "LZMA_API_STATIC", when = { linkage = "static" } }]
+```
+
+`linkage` may be tested in the `when` of `defines` only, alone or with options and `not`. The defines reach the
+project's build through otok's files (`otok-config.cmake`, `otok.props`, the module on Apple), and the builds of the
+recipes that depend on the library: each of their slices is compiled with the defines of its dependencies' products,
+and theirs, as `-D<define>` in `slice.toolchain.cflags` and `cxxflags`, which every helper passes on; `build.lua` also
+finds them in `deps.<library>.defines`. So a recipe need not rewrite its installed headers for its dependents, nor
+add the macro in the builds of other recipes.
+
 ## System libraries and frameworks
 
 A product names what its consumers link besides its own libraries: system libraries in `link`, Apple frameworks in
