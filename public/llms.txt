@@ -1,0 +1,65 @@
+# Otok
+
+> otok is a dependency manager for native C and C++ libraries. It builds each library from source on the user's
+> machine, with the project's options, platforms, linkage and compiler, and writes them into one output directory for
+> the app's build: XCFrameworks and a Swift package for Xcode and SwiftPM, `otok-config.cmake` for CMake, `otok.props`
+> for Visual Studio, shared objects for Gradle. Targets: Apple (macOS, iOS and every other Apple platform and
+> simulator), Android, Windows (MSVC or clang-cl) and Linux (GCC or Clang). Everything is declared in `otok.toml`;
+> `otok.lock` pins every version, recipe and input by its hash. Recipes come from a public index
+> (https://otok-dev.github.io/index/).
+
+For coding agents:
+
+- Pass `--format json` to the commands whose output you read: `search`, `info`, `outdated`, `audit`, `why` and
+  `log --list` print one JSON document; `install`, `update` and `fetch` print JSON lines, one event per line, ending
+  with `{"event":"end","exit":N}`. Errors and warnings are in `diagnostics` (or `diagnostic` events). Needs otok 0.5.34
+  or later (`search` and `info`: 0.5.33).
+- To add a library: `otok search <name> --format json`, then `otok info <recipe id> --format json` (versions,
+  targets, options with their documentation), then a `[deps.<library>]` table in `otok.toml` with `recipe`, `version`
+  and `options`, then `otok install --format json`.
+- Edit `otok.toml`, never `otok.lock`. Commit both; `Otok/` is generated.
+- The first install builds from source and can take many minutes; later ones use the machine's cache.
+- A skill for agents (Agent Skills format, `SKILL.md`) with the whole workflow:
+  https://otok-dev.github.io/skills/otok/SKILL.md
+
+## Docs
+
+- [Coding agents](https://otok-dev.github.io/guides/agents/): how an agent drives otok, the skill and an `AGENTS.md` note
+- [Install otok](https://otok-dev.github.io/start/install/): Homebrew, Scoop, the Linux install script, from source
+- [First project for Apple](https://otok-dev.github.io/start/apple/): `otok.toml`, `otok install`, the Swift package
+- [First project for Android](https://otok-dev.github.io/start/android/): the NDK, Gradle and CMake
+- [First project for Windows](https://otok-dev.github.io/start/windows/): CMake and Visual Studio projects
+- [First project for Linux](https://otok-dev.github.io/start/linux/): CMake, static or shared objects
+- [Coming from CocoaPods](https://otok-dev.github.io/start/from-cocoapods/)
+- [Options, linkage and profiles](https://otok-dev.github.io/guides/options/)
+- [Several targets in one project](https://otok-dev.github.io/guides/targets/)
+- [CMake projects with find_package](https://otok-dev.github.io/guides/cmake/): the dependency provider
+- [The lock and updates](https://otok-dev.github.io/guides/lock/)
+- [Continuous integration](https://otok-dev.github.io/guides/ci/): `otok install --locked` and the cache
+- [Tools for your own build](https://otok-dev.github.io/guides/tools/)
+- [Working on a library](https://otok-dev.github.io/guides/dev-builds/): building a library from its working tree
+
+## Reference
+
+- [Commands](https://otok-dev.github.io/reference/commands/): every command and option
+- [otok.toml](https://otok-dev.github.io/reference/otok-toml/)
+- [config.toml](https://otok-dev.github.io/reference/config/): the machine's settings
+- [JSON output of the commands](https://github.com/otok-dev/otok/blob/main/docs/formats/cli-json.md): `--format json`
+- [otok metadata](https://github.com/otok-dev/otok/blob/main/docs/formats/metadata.md): the project as JSON
+- [The format documents](https://github.com/otok-dev/otok/tree/main/docs/formats): `otok.toml`, `otok.lock`,
+  `recipe.toml`, `build.lua`, the index
+
+## Recipes
+
+- [Library catalog](https://otok-dev.github.io/index/): every recipe of the public index, its versions and options
+- [Write a recipe](https://otok-dev.github.io/recipes/write/)
+- [Publish a recipe](https://otok-dev.github.io/recipes/publish/)
+
+## Optional
+
+- [Why otok](https://otok-dev.github.io/why/)
+- [How otok works](https://otok-dev.github.io/concepts/how-it-works/)
+- [The build sandbox](https://otok-dev.github.io/concepts/sandbox/)
+- [The cache](https://otok-dev.github.io/guides/cache/)
+- [Examples](https://github.com/otok-dev/examples): a project per library, checked on every target
+- [Source](https://github.com/otok-dev/otok)
