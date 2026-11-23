@@ -14,6 +14,8 @@ For coding agents:
   `log --list` print one JSON document; `install`, `update` and `fetch` print JSON lines, one event per line, ending
   with `{"event":"end","exit":N}`. Errors and warnings are in `diagnostics` (or `diagnostic` events). Needs otok 0.5.34
   or later (`search` and `info`: 0.5.33).
+- A failed build: the `slice` event with `"state":"failed"` names its `log` (its end has the compiler's error) and a
+  `hint` when otok knows the cause (otok 0.5.36 or later); else `otok log <library> --list --format json`.
 - To add a library: `otok search <name> --format json`, then `otok info <recipe id> --format json` (versions,
   targets, options with their documentation), then a `[deps.<library>]` table in `otok.toml` with `recipe`, `version`
   and `options`, then `otok install --format json`.

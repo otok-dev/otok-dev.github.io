@@ -23,15 +23,20 @@ otok install --format json
   its `diagnostics`, the errors and warnings, each with its `severity`, `message` and, when it concerns a file, the
   file, line and column.
 - `install`, `update` and `fetch` run for minutes, so they print JSON lines, one event per line as it happens: the
-  lock written, the inputs fetched, each slice building, built or taken from the cache, each output written, each
-  diagnostic, and last `{"event":"end","exit":0}`. The progress for people stays on standard error.
+  lock written, the inputs fetched, each slice building, built, taken from the cache or failed, each output written,
+  each diagnostic, and last `{"event":"end","exit":0}`. The progress for people stays on standard error.
+- A slice that fails comes with its `message`, the `log` otok kept of its build (the end of that file has the
+  compiler's or the build system's error) and a `hint` when otok knows what to do about it (otok 0.5.36 or later).
+- `otok publish` prints JSON lines too, for recipe authors' scripts: each recipe, each build with its slices, and how
+  the publication ended (the pull request's number and URL). `otok publish --dry-run --no-build --all --format json`
+  checks every recipe of a checkout without building (otok 0.5.37 or later).
 
 ```text
-{"command":"install","event":"start","format":1,"otok":"0.5.34"}
+{"command":"install","event":"start","format":1,"otok":"0.5.36"}
 {"changes":["added lz4 1.11.1 (r1)"],"event":"lock","state":"created"}
 {"event":"inputs","resources":0,"sources":1}
-{"build-tools":false,"configuration":"release","dev":null,"event":"slice","id":"lz4","library":"lz4","revision":1,"seconds":null,"slice":"linux-x86_64","state":"building","tool":false,"version":"1.11.1"}
-{"build-tools":false,"configuration":"release","dev":null,"event":"slice","id":"lz4","library":"lz4","revision":1,"seconds":9.8,"slice":"linux-x86_64","state":"built","tool":false,"version":"1.11.1"}
+{"build-tools":false,"configuration":"release","dev":null,"event":"slice","hint":null,"id":"lz4","library":"lz4","log":null,"message":null,"revision":1,"seconds":null,"slice":"linux-x86_64","state":"building","tool":false,"version":"1.11.1"}
+{"build-tools":false,"configuration":"release","dev":null,"event":"slice","hint":null,"id":"lz4","library":"lz4","log":null,"message":null,"revision":1,"seconds":9.8,"slice":"linux-x86_64","state":"built","tool":false,"version":"1.11.1"}
 {"cached":0,"count":1,"event":"slices"}
 {"copied":1,"dir":"Otok","event":"output","removed":0,"target":"linux","unchanged":0}
 {"event":"end","exit":0}
@@ -83,7 +88,7 @@ This project gets its native libraries from otok (https://otok-dev.github.io/llm
 - Run otok commands with `--format json` and read `diagnostics` or the `diagnostic` events.
 - Add a library: `otok search <name> --format json`, `otok info <recipe> --format json`, a `[deps.<library>]` table
   in `otok.toml`, then `otok install --format json`.
-- A failed build: `otok log <library> --list --format json`, then read the newest failed log.
+- A failed build: the `log` of the failed `slice` event (or `otok log <library> --list --format json`, the newest failed log).
 ```
 
 ## For agents that read the web

@@ -39,6 +39,10 @@ otok builds the recipe from its pushed commit, checks it, and opens a pull reque
 adding the entry. The publisher is your GitHub account's name unless `--publisher` names another (an organization you
 are a public member of). `--all` publishes every recipe of the checkout that is not published yet.
 
+`otok publish --dry-run --no-build --all` builds nothing: it checks every recipe of the checkout as a publication would
+before building (pushed, readable, its entry the same as the index's if the index has it) and says which are
+published already and which can be published. A script reads it with `--format json`.
+
 ## Review
 
 The index's CI checks every pull request without running anything of it: the files hash to the entry, the entry says
