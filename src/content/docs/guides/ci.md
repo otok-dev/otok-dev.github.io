@@ -178,6 +178,26 @@ runner. Upload those files, not the whole work directory:
 
 (The paths are those of the Windows cache; on macOS and Linux use the cache's directory of the examples above.)
 
+## A store of the team
+
+`actions/cache` keeps the builds of one repository's runs. A team with a
+[store of its own](/guides/cache/#sharing-builds-between-machines) can share them between its repositories, its CI and
+its developers instead, or besides: CI puts what it builds into the store, and every machine reading the store takes it.
+In CI the store is given by variables, the token by a secret:
+
+```yaml
+      - name: Libraries
+        env:
+          OTOK_BUILD_CACHE: https://otok-cache.example.com/team
+          OTOK_BUILD_CACHE_PUSH: https://otok-cache.example.com/team
+          OTOK_BUILD_CACHE_TOKEN: ${{ secrets.OTOK_CACHE_WRITE_TOKEN }}
+        run: otok install --locked
+```
+
+A runner reaches the store only where the store can be reached from: a self-hosted runner in the team's network, or a
+store open to the internet over HTTPS. The variables cannot say `push-local`: a project whose libraries are paths of
+its repository pushes them only with a `config.toml` that says so (`OTOK_CONFIG` names one).
+
 ## Other systems
 
 The same pattern works anywhere: the cache is one directory (`OTOK_CACHE_DIR` moves it), and nothing in it depends on

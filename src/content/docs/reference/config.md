@@ -52,6 +52,14 @@ from = "https://github.com/"
 to = "https://git.example.com/github/"
 ```
 
+A machine of a team that shares its builds through a store of its own ([sharing builds](/guides/cache/#sharing-builds-between-machines)):
+
+```toml
+[[build-cache]]
+url = "http://build-cache.lan:9092"
+token-file = "~/.config/team/otok-cache-read-token"
+```
+
 Write paths with `/`, or as TOML literal strings in single quotes (`'C:\Program Files\LLVM'`): in double quotes a `\`
 starts an escape.
 
@@ -65,6 +73,7 @@ starts an escape.
 | `index` | `OTOK_INDEX` | The recipe index, `view+https://otok-dev.github.io/index` by default; `""` for none. |
 | `index-mirror` | `OTOK_INDEX_MIRROR` | Read the index from a copy. |
 | `asset-mirror`, `url-rewrite`, `mirrors-only` | | [Where inputs come from](/guides/fetch/). |
+| `build-cache` | `OTOK_BUILD_CACHE`, `OTOK_BUILD_CACHE_PUSH`, `OTOK_BUILD_CACHE_TOKEN` | [Stores of builds shared](/guides/cache/#sharing-builds-between-machines) by a team's machines: tables of `url` (`file:`, `https` or `http`), `push`, `push-local` and `token-file`, asked in their order. `OTOK_BUILD_CACHE` replaces them with its URLs, separated by spaces, read only; `OTOK_BUILD_CACHE_PUSH` pushes to one; `OTOK_BUILD_CACHE_TOKEN` is the token of the stores of the variables. `--no-build-cache` turns them off for one run. |
 | `proxy` | `OTOK_PROXY` | An HTTP(S) proxy, by default from `HTTPS_PROXY` and `HTTP_PROXY`. |
 | `xcode` | `OTOK_XCODE` | The Xcode that builds for Apple platforms; `DEVELOPER_DIR` and `xcode-select` otherwise. |
 | `visual-studio` | `OTOK_VISUAL_STUDIO` | The Visual Studio that builds for Windows: `"2026"`, `"18"` or a path; the newest by default. |

@@ -29,7 +29,8 @@ core = "../core"
 - `otok tree` marks these libraries `(dev)`. `--no-dev` ignores the file and builds exactly what the lock says.
 
 Of a working tree that is a git checkout, otok takes the files git does not ignore, as a commit would hold them, so
-build directories inside the checkout do not get in the way.
+build directories inside the checkout do not get in the way. A resource the recipe reads where it is (one without
+`dest`) is copied into the work directory for every build, since the build's sandbox does not read your working trees.
 
 To make the change permanent, commit and push the library or recipe, then point `otok.toml` at the new version or
 commit and run `otok install`.

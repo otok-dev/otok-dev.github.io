@@ -1,6 +1,6 @@
 ---
 title: The cache
-description: Where otok keeps downloads and builds, and how to clean it.
+description: Where otok keeps downloads and builds, how to clean it, and how a team shares its builds.
 sidebar:
   order: 5
 ---
@@ -34,6 +34,52 @@ otok clean --sources             # unpacked sources and git repositories
 otok clean                       # everything
 otok clean --dry-run             # what would be removed
 ```
+
+## Sharing builds between machines
+
+A team can share what its machines build through a store of its own, so that CI and every developer do not build the
+same libraries again. There is no public store: built libraries reach only the machines you give them to. A store is
+a directory (a network share) or an HTTP server: nginx with WebDAV, [bazel-remote](https://github.com/buchgr/bazel-remote),
+a generic repository of Artifactory, anything that answers `GET` and `PUT` of files.
+
+Stores are named in the [`config.toml`](/reference/config/) of each machine, never in a project, so cloning a project
+never makes otok take binaries from a place you did not choose:
+
+```toml
+# a developer's machine: takes what is there
+[[build-cache]]
+url = "https://otok-cache.example.com/team"
+token-file = "~/.config/example/otok-cache-read-token"
+
+# CI: puts there what it builds
+[[build-cache]]
+url = "https://otok-cache.example.com/team"
+push = true
+token-file = "~/.config/example/otok-cache-write-token"
+```
+
+`otok install` looks for each library in the local cache first, then in the stores in their order, and builds only
+what none has; it fetches the sources of those alone. A library found in a store is checked (its hash, the key it was
+built for, its binaries) before it enters the local cache. A store that cannot be reached is a warning, and the
+libraries are built. `otok install --no-build-cache` uses the local cache alone.
+
+```sh
+otok cache status                # where each library would come from: the local cache, a store, a build
+otok cache push                  # put what the local cache holds into the stores that take pushes
+otok cache push zlib --store URL # the builds of one library, into one store
+```
+
+Libraries built from a source or recipe of a path on your machine (a `path` of `otok.toml`) are not pushed unless the
+store has `push-local = true`; those of [dev builds](/guides/dev-builds/) never are.
+
+A library is found in a store only when everything that went into its build is the same, the toolchain included: pin
+the versions of Xcode, Visual Studio, the NDK and the compilers on the machines that share a store. Whoever reads a
+store trusts everyone who may write to it: give the write token to CI and to the people who build releases, a read
+token to the others.
+
+otok removes nothing from a store; prune it on the server, by the access time of its files (`ac/` holds a small file
+per build, `cas/` the archives they name). The layout and the protocol are in the
+[specification](https://github.com/otok-dev/otok/blob/main/docs/formats/cache.md#12-shared-build-cache).
 
 ## Logs
 
