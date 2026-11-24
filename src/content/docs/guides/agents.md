@@ -29,7 +29,8 @@ otok install --format json
   compiler's or the build system's error) and a `hint` when otok knows what to do about it (otok 0.5.36 or later).
 - `otok publish` prints JSON lines too, for recipe authors' scripts: each recipe, each build with its slices, and how
   the publication ended (the pull request's number and URL). `otok publish --dry-run --no-build --all --format json`
-  checks every recipe of a checkout without building (otok 0.5.37 or later).
+  checks every recipe of a checkout without building (otok 0.5.37 or later). Each `recipe` event says where the recipe
+  builds (`build-on`) and, for a tool recipe, its `programs` (otok 0.5.38 or later).
 
 ```text
 {"command":"install","event":"start","format":1,"otok":"0.5.36"}
