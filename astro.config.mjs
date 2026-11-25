@@ -15,7 +15,7 @@ export default defineConfig({
           attrs: { 'data-goatcounter': 'https://otok-dev.goatcounter.com/count', async: true, src: 'https://gc.zgo.at/count.js' },
         },
       ],
-      description: 'Native libraries built from source into XCFrameworks for Xcode and SwiftPM — and for Android, Windows and Linux.',
+      description: 'Native libraries built from source for your app, from one otok.toml — for Apple platforms, Android, Windows and Linux.',
       // English is the source; translations go into src/content/docs/<lang>/ under the same paths. A page not
       // translated yet is shown in English with a notice.
       defaultLocale: 'root',

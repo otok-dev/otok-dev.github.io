@@ -1,17 +1,20 @@
 ---
 title: Why otok
-description: More than a new place to publish libraries — each one built for your app, configured as you ask, from one file.
+description: Each native library built from source for your app, on every platform you ship, configured as you ask, from one file.
 ---
 
-Like trunk for pods, otok has a public [index](https://otok-dev.github.io/index/) where libraries are published, as
-recipes rather than pods. But it is more than a new place to publish them: it changes who builds a library, and for
-whom. Not a pod's author, once, with the choices that author made, but otok on your machine, for your app, with yours.
+The native libraries an app depends on, OpenSSL, ICU, Boost, FFmpeg and the like, usually reach it in one of two ways:
+as binaries someone else built (a pod, an AAR, a NuGet package, the system's package), or through build scripts of
+your own, one set per platform. otok changes who builds a library, and for whom: not a package's author, once, with the
+choices that author made, but otok on your machine, for your app, with yours, for Apple platforms, Android, Windows
+and Linux alike. Libraries come from recipes, published in a public [index](https://otok-dev.github.io/index/) or kept
+in a repository of your own.
 
 ## Your build of every library
 
-A pod of a library with a build system of its own (OpenSSL, Boost, ICU, FFmpeg) usually ships binaries its author
-built once: the platforms, the deployment version, the options, static or dynamic, all fixed. What the author did not
-foresee, you cannot have; subspecs are the few variants the author chose to prepare.
+A binary package of a library with a build system of its own fixes what its author chose: the platforms, the minimum
+OS versions, the options, static or dynamic. What the author did not foresee, you cannot have; variants are the few the
+author chose to prepare.
 
 otok builds each library from its source, with the options *you* ask for:
 
@@ -37,14 +40,15 @@ options = { no-deprecated = true }
 ICU's data alone is around 30 MB; built from its sources with your filter, it holds what your app needs. And what you
 choose is not limited to options:
 
-- **Platforms and deployment versions:** exactly the ones you ship, visionOS, watchOS and Mac Catalyst included,
-  each with its simulator, at your minimum OS versions, not the pod author's.
-- **Static or dynamic,** for every library on its own, where its recipe offers both: a framework embedded in the app, or linked in.
+- **Platforms, architectures and minimum versions:** exactly the ones you ship: Apple's platforms and their
+  simulators at your deployment versions, the Android ABIs and API level of your app, Windows on x64 and ARM64.
+- **Static or dynamic,** for every library on its own, where its recipe offers both.
 - **The C++ standard** of your code, so every library is compiled with the same `__cplusplus` as the code that calls
   it.
 - **Compiler flags,** for one library or all: a macro of a library's own configuration, frame pointers for profiling,
   address sanitizer in a profile (`otok install --profile asan`).
-- **Your Xcode.** Libraries are built by the Xcode that builds your app, with its SDKs.
+- **Your compilers.** Libraries are built by the toolchain that builds your app: your Xcode and its SDKs, your
+  Android NDK, your Visual Studio (MSVC or clang-cl), GCC or Clang on Linux.
 
 Before anything is built, otok checks your choices against what each recipe declares, and against what every other
 library asks for: an unknown option, a platform a recipe cannot build or two libraries wanting different options of a
@@ -53,17 +57,62 @@ third are errors naming who asked for what, not a link failure an hour later.
 ## One file says everything
 
 Everything that changes what is built is in `otok.toml`, in one place: the libraries and their versions, options,
-linkage, platforms, deployment versions, flags, standards, and the variants of all of it in profiles. Nothing else
-does.
+linkage, targets, platforms, minimum versions, flags, standards, and the variants of all of it in profiles. Nothing
+else does.
 
 Other tools spread it over levels. With vcpkg, which libraries and features are in `vcpkg.json`; the registries and
 the baseline in `vcpkg-configuration.json`; static or dynamic, the runtime, the flags and the platform in triplet
 files, chosen by a CMake variable or an environment variable; changed recipes in overlay directories. To know what a
 project builds, you read all of them, and the machine's environment too.
 
-otok has machine settings as well (`config.toml`: where the cache is, which Xcode, a mirror), under one rule: **they
-never change what is built.** The same `otok.toml` and `otok.lock` give the same libraries on your Mac, your
-colleague's and CI.
+otok has machine settings as well (`config.toml`: where the cache is, which Xcode or NDK, a mirror), under one rule:
+**they never change what is built.** The same `otok.toml` and `otok.lock` give the same libraries on your machine,
+your colleague's and CI.
+
+## One list for every platform
+
+An app with an iOS version, an Android version and a desktop one keeps one list of its native libraries, at the same
+versions everywhere:
+
+```toml
+[apple]
+platforms = ["ios", "iossim", "macosx"]
+deployment = { ios = "17.0", macos = "14.0" }
+output = "apple/Otok"
+
+[android]
+architectures = { android = ["arm64-v8a", "x86_64"] }
+deployment = { android = "24" }
+output = "android/Otok"
+
+[windows]
+build-on = ["windows/msvc"]
+output = "windows/Otok"
+
+[linux]
+build-on = ["linux/gcc"]
+output = "linux/Otok"
+```
+
+Each machine builds the targets it can, a Mac the Apple and Android ones, a Windows machine the Windows and Android
+ones, and says why it skips the others. The lock is shared: a library updated once is updated for every platform. See
+[Several targets in one project](/guides/targets/).
+
+## Native to each build
+
+otok writes one directory per target, in the form that target's build expects, and never touches your project files:
+
+- **Apple:** XCFrameworks in a Swift package you add to Xcode once, or depend on from your own `Package.swift`.
+- **Android:** the libraries of every ABI for the CMake of your Gradle build; the shared objects your native library
+  links are packed into the APK by Gradle itself.
+- **Windows:** `otok.props` and `otok.targets` for Visual Studio projects, with the DLLs copied beside your program.
+- **Every target:** `otok-config.cmake` with `otok::` targets, which checks at configure time what would otherwise
+  fail at link time: an architecture that was not built, or a compiler or NDK older than the one that built the
+  libraries.
+
+A CMake project that already finds a library as `find_package(ZLIB)` keeps doing so: otok answers it with its own
+build ([CMake projects](/guides/cmake/)). Every output also lists the licenses of everything built, for your about
+screen or notice file.
 
 ## Every input pinned
 
@@ -84,19 +133,6 @@ versions. You know what you link, and you can check it.
 Many libraries apps depend on are no longer maintained, and some need a change that their authors never made. A
 recipe carries patches: they are applied to the pinned source before every build, are part of the recipe's hash, and
 are shown with it on the catalog. No fork to keep, and every project using the recipe gets the fix.
-
-This works for Swift packages too. [Updates](https://github.com/rwbutler/Updates), which prompts users to install a
-newer version of an app, is unmaintained: it asks the App Store over `http://`, which App Transport Security blocks,
-and its Swift package left out the user interface its pod had. The recipe `apotocki/updates` fixes both with two
-patches and delivers the patched Swift package in `Otok/`, built by Xcode with your app as any Swift package is:
-
-```toml
-[deps.updates]
-recipe = "apotocki/updates"
-version = "~> 2.0"
-```
-
-A Swift package that is maintained needs none of this: depend on it with SwiftPM directly.
 
 ## Your own libraries, the same way
 
@@ -127,8 +163,8 @@ or with `--no-dev`, the project builds exactly what the lock says. See [Working 
 ## Builds that cannot reach your files
 
 Building a library runs its build scripts on your machine: configure scripts, CMake files, code generators, written
-by people you do not know. With CocoaPods a pod's `prepare_command` runs on `pod install`, and its script phases in
-every Xcode build, with all the access your account has.
+by people you do not know. Package managers usually run them with all the access your account has: a pod's
+`prepare_command` and script phases, a vcpkg port, a Conan recipe.
 
 otok runs every build in a sandbox, on macOS, Linux and Windows:
 
@@ -142,7 +178,9 @@ Linux, an AppContainer on Windows. Where it cannot be made (Linux without `bwrap
 own: it stops and says so, and `--no-sandbox` builds without it when you ask. [The build sandbox](/concepts/sandbox/)
 explains how it works, and why on Windows otok puts a DLL of its own into the processes of a build.
 
-## Ready for the App Store
+## For Apple apps
+
+### Ready for the App Store
 
 - Every library is an XCFramework with the slices of every platform you ship, simulators on Apple silicon included.
 - Privacy manifests come with the libraries, and otok checks every library for the APIs that need a declared reason.
@@ -151,22 +189,29 @@ explains how it works, and why on Windows otok puts a DLL of its own into the pr
 - `Acknowledgements.plist` is a Settings.bundle page of all the licenses; `[policy]` keeps licenses you cannot accept
   out of your app.
 
-## Nothing touches your Xcode project
+### Nothing touches your Xcode project
 
-otok writes one directory, `Otok/`, a Swift package you add to your project once. No generated workspace, no build
-phases, no project rewritten on every install. The same directory has an `otok-config.cmake` for CMake, and a CMake
-project that finds its libraries as `find_package(ZLIB)` keeps doing so ([CMake projects](/guides/cmake/)).
+otok writes one directory, a Swift package you add to your project once. No generated workspace, no build phases, no
+project rewritten on every install.
 
-## Beyond Apple
+### Swift packages that need a fix
 
-The same `otok.toml` builds the same libraries, at the same versions, for Android with the NDK, for Windows with
-Visual Studio and for Linux. An app with an iOS and an Android version keeps one list of its native libraries.
+Patches work for Swift packages too. [Updates](https://github.com/rwbutler/Updates), which prompts users to install a
+newer version of an app, is unmaintained: it asks the App Store over `http://`, which App Transport Security blocks,
+and its Swift package left out the user interface its pod had. The recipe `apotocki/updates` fixes both with two
+patches and delivers the patched Swift package in `Otok/`, built by Xcode with your app as any Swift package is:
+
+```toml
+[deps.updates]
+recipe = "apotocki/updates"
+version = "~> 2.0"
+```
+
+A Swift package that is maintained needs none of this: depend on it with SwiftPM directly.
+
+Coming from CocoaPods? See [what a Podfile becomes](/start/from-cocoapods/).
 
 ## And when a library is missing
 
 A recipe is a `recipe.toml` and a short `build.lua` that runs the library's own CMake, Meson or autotools build. Use it
 from a directory of your project at once; [publish it](/recipes/publish/) when it is ready.
-
----
-
-Coming from CocoaPods? See [what a Podfile becomes](/start/from-cocoapods/).
