@@ -42,6 +42,23 @@ otok builds the recipe from its pushed commit, checks it, and opens a pull reque
 adding the entry. The publisher is your GitHub account's name unless `--publisher` names another (an organization you
 are a public member of). `--all` publishes every recipe of the checkout that is not published yet.
 
+A recipe is built once in each of its environments that the machine has, and once more for each option set of its
+`[[publish.check]]` tables (`recipe.toml`, section 14), all at once. When there are several builds, otok numbers them
+and puts a tag before each line of their progress: the number, the environment if the recipe builds in more than one
+here, and the options if it has checks (`default` for its defaults). From otok 0.6.3:
+
+```text
+[1] building apotocki/gmp 6.3.0-r1 (windows) for windows in windows/msvc
+[2] building apotocki/gmp 6.3.0-r1 (windows) for windows in windows/msvc with {assembly = "none", cxx = false}
+...
+[1 default] building tool make 4.4.1 for windows-x86_64
+[2 assembly=none cxx=false] building gmp 6.3.0 for windows-x86_64
+```
+
+A tool or a dependency that several builds need is built once, and its lines come with the tag of the build that
+builds it. With `--format json` the list of the builds is on standard error and every event carries its `build`
+number.
+
 `otok publish --dry-run --no-build --all` builds nothing: it checks every recipe of the checkout as a publication would
 before building (pushed, readable, its entry the same as the index's if the index has it) and says which are
 published already and which can be published. A script reads it with `--format json`.
