@@ -2,6 +2,9 @@
 title: Otok
 description: Native libraries built from source into XCFrameworks for Xcode and SwiftPM — and for Android, Windows and Linux.
 template: splash
+banner:
+  content: |
+    otok is before 1.0: the formats of <code>otok.toml</code>, recipes and <code>otok.lock</code> may still change.
 hero:
   tagline: Native libraries built from source into XCFrameworks for Xcode and SwiftPM — and for Android, Windows and Linux.
   actions:
@@ -17,7 +20,58 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, Steps } from '@astrojs/starlight/components';
+
+## From otok.toml to Xcode
+
+<Steps>
+
+1. Describe what you ship in `otok.toml`:
+
+   ```toml
+   [otok]
+   format = 1
+
+   [apple]
+   platforms = ["macosx", "ios", "iossim"]
+   deployment = { macos = "14.0", ios = "17.0" }
+
+   [deps.lz4]
+   recipe = "apotocki/lz4"
+   version = "~> 1.10"
+   ```
+
+2. Build it:
+
+   ```text
+   $ otok install
+   otok.lock created:
+     added lz4 1.11.1 (r2)
+     tool added cmake 4.4.5 (r2)
+     tool added ninja 1.13.2 (r2)
+     tool added python 3.14.10 (r2)
+   ...
+   built lz4 1.11.1 for ios-arm64 (3.9 s), 3 of 5 slices
+   ...
+   packaging lz4 1.11.1 for apple
+   output 'Otok': 1 copied, 0 unchanged, 0 removed
+   ```
+
+3. Add the directory `Otok` to Xcode once (**File → Add Package Dependencies… → Add Local…**) and use the library:
+
+   ```swift
+   import LZ4
+
+   print("LZ4 \(String(cString: LZ4_versionString()))")
+   ```
+
+   ![Xcode with the Swift package Hello: main.swift imports LZ4 from the local package Otok, and the console shows LZ4 1.11.1](../../assets/xcode-lz4.png)
+
+</Steps>
+
+The whole walk-through, with Swift packages and CMake: [First project for Apple platforms](/start/apple/).
+
+## Why it is different
 
 <CardGrid>
   <Card title="Your build of every library" icon="setting">

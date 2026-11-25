@@ -41,14 +41,14 @@ otok install
 
 ```text
 otok.lock created:
-  added lz4 1.11.0 (r1)
-  tool added cmake 4.4.5 (r1)
-  tool added ninja 1.13.2 (r1)
-  tool added python 3.14.10 (r1)
+  added lz4 1.11.1 (r2)
+  tool added cmake 4.4.5 (r2)
+  tool added ninja 1.13.2 (r2)
+  tool added python 3.14.10 (r2)
 ...
-built lz4 1.11.0 for ios-arm64 (3.9 s), 3 of 5 slices
+built lz4 1.11.1 for ios-arm64 (3.9 s), 3 of 5 slices
 ...
-packaging lz4 1.11.0 for apple
+packaging lz4 1.11.1 for apple
 output 'Otok': 1 copied, 0 unchanged, 0 removed
 ```
 
@@ -110,7 +110,7 @@ swift run
 ```
 
 ```text
-LZ4 1.11.0
+LZ4 1.11.1
 ```
 
 ## Use it from CMake
