@@ -213,16 +213,17 @@ Step by step for each target: [Apple platforms](/start/apple/), [Android](/start
     your compilers: Xcode, the NDK, Visual Studio, GCC or Clang.
   </Card>
   <Card title="One file says everything" icon="document">
-    Libraries, versions, options, targets, flags and profiles are all in `otok.toml`, and nothing else changes what is
-    built: no triplets, overlays or environment variables to read besides it. An app for iOS and Android keeps one
-    list of native libraries, at the same versions.
+    Libraries, versions, options, targets, flags and profiles are all in `otok.toml`: no triplets, overlays or
+    environment variables to keep besides it. The machine gives only its compiler (and on Linux its C library), and
+    otok records the compiler's version with every build. An app for iOS and Android keeps one list of native
+    libraries, at the same versions.
   </Card>
   <Card title="Native to each build" icon="puzzle">
     A Swift package for Xcode, `otok-config.cmake` for CMake on every platform, props for Visual Studio, shared
     objects Gradle packs into the APK, and `find_package(ZLIB)` answered as before. otok writes one directory per
     target and never touches your project files.
   </Card>
-  <Card title="Every input pinned" icon="approve-check">
+  <Card title="Every download pinned" icon="approve-check">
     `otok.lock` pins every library's version, recipe and source by hash, and the tools that build them, CMake and
     Ninja included: they come from recipes too, not from whatever is installed.
   </Card>
@@ -245,6 +246,9 @@ Step by step for each target: [Apple platforms](/start/apple/), [Android](/start
   </Card>
 </CardGrid>
 
+See [how otok compares](/why/#otok-and-other-tools) with vcpkg, Conan, CocoaPods and SwiftPM, including what otok
+does not have yet.
+
 ## Project status
 
 - **Release:** otok <a href={OTOK_RELEASE}>{OTOK_VERSION}</a>, before 1.0: the formats of `otok.toml`, recipes and
@@ -262,7 +266,5 @@ Step by step for each target: [Apple platforms](/start/apple/), [Android](/start
   builds from the cache, which a team can [share](/guides/cache/). On Linux, libraries are built against the C
   library of the machine that builds them: build on the oldest distribution you support. Some Windows builds make
   symbolic links, which need Developer Mode.
-- **Compared with vcpkg, Conan, CocoaPods and SwiftPM:** [otok and other tools](/why/#otok-and-other-tools), with what
-  otok does not have yet.
 - **Source and issues:** [github.com/otok-dev/otok](https://github.com/otok-dev/otok): the source, the
   [releases](https://github.com/otok-dev/otok/releases) and the [issues](https://github.com/otok-dev/otok/issues).

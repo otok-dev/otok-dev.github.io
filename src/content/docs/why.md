@@ -56,18 +56,22 @@ third are errors naming who asked for what, not a link failure an hour later.
 
 ## One file says everything
 
-Everything that changes what is built is in `otok.toml`, in one place: the libraries and their versions, options,
-linkage, targets, platforms, minimum versions, flags, standards, and the variants of all of it in profiles. Nothing
-else does.
+Everything you choose about a build is in `otok.toml`, in one place: the libraries and their versions, options,
+linkage, targets, platforms, minimum versions, flags, standards, and the variants of all of it in profiles.
 
 Other tools spread it over levels. With vcpkg, which libraries and features are in `vcpkg.json`; the registries and
 the baseline in `vcpkg-configuration.json`; static or dynamic, the runtime, the flags and the platform in triplet
 files, chosen by a CMake variable or an environment variable; changed recipes in overlay directories. To know what a
 project builds, you read all of them, and the machine's environment too.
 
-otok has machine settings as well (`config.toml`: where the cache is, which Xcode or NDK, a mirror), under one rule:
-**they never change what is built.** The same `otok.toml` and `otok.lock` give the same libraries on your machine,
-your colleague's and CI.
+otok has machine settings as well (`config.toml`: where the cache is, a mirror, which Xcode or NDK to use), and the
+machine has its compilers. The compiler is what otok does not pin: libraries are built by the compiler that
+builds your app. otok records its version with every build, so that a build by another Xcode or NDK is a build of its
+own, never mixed with the others in the cache, and the CMake files of the output refuse an app whose NDK or MSVC is
+older than the one that built the libraries. Besides the compiler, and on Linux the system's C library, nothing of
+the machine reaches a build: not its environment variables, nor libraries installed by other package managers. The
+same `otok.toml` and `otok.lock` give the same libraries on your machine, your colleague's and CI, with
+the same compilers.
 
 ## One list for every platform
 
@@ -114,7 +118,7 @@ A CMake project that already finds a library as `find_package(ZLIB)` keeps doing
 build ([CMake projects](/guides/cmake/)). Every output also lists the licenses of everything built, for your about
 screen or notice file.
 
-## Every input pinned
+## Every download pinned
 
 `otok.lock` records every library's version, the recipe by the hash of its files, the source by its hash or commit,
 and the same for the tools that build it, CMake and Ninja included: they come from recipes too, not from whatever is
