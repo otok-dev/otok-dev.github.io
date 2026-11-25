@@ -178,6 +178,49 @@ Linux, an AppContainer on Windows. Where it cannot be made (Linux without `bwrap
 own: it stops and says so, and `--no-sandbox` builds without it when you ask. [The build sandbox](/concepts/sandbox/)
 explains how it works, and why on Windows otok puts a DLL of its own into the processes of a build.
 
+## otok and other tools
+
+otok is young; the tools below are not, and for some projects each of them is the better choice. Here is where they
+differ, as fairly as we can put it. If something here is wrong or out of date, please say so in an
+[issue](https://github.com/otok-dev/otok/issues).
+
+**vcpkg.** Microsoft's package manager for C and C++ builds libraries from source too, and its catalog is far larger:
+thousands of ports, where otok's [index](https://otok-dev.github.io/index/) has some seventy libraries. It is mature,
+integrates with CMake and MSBuild, and its binary caching serves teams and CI. otok differs in where a build is
+described and in what it delivers. Everything that changes a build is in `otok.toml`, where vcpkg spreads it over its
+manifest, its configuration, triplets and overlays ([above](#one-file-says-everything)). For Apple platforms otok
+delivers XCFrameworks in a Swift package with privacy manifests and App Store checks, where vcpkg's community triplets
+give static libraries per platform, to be assembled by you. And otok runs every build in a sandbox, where a vcpkg port
+runs with the access of your account.
+
+**Conan.** Conan's recipes are Python programs; ConanCenter has well over a thousand of them, with prebuilt binaries
+for common configurations and source builds for the rest. Profiles hold the settings, lockfiles pin the graph,
+generators serve CMake, MSBuild and Xcode, and teams keep their binaries in a server of their own. It is very
+flexible, and widely used in companies. otok's recipes are declarative files with a short build
+script in a restricted Lua, and its builds run in a sandbox, where a Conan recipe runs with the access of your
+account; for Apple platforms otok delivers XCFrameworks in a Swift package. otok has no public binaries: every library
+is built on your machines once, and then comes from the cache, which a team can [share](/guides/cache/).
+
+**CocoaPods.** CocoaPods serves Apple platforms only. Many pods of native libraries ship binaries their authors built
+once, with the platforms, versions and options they chose. CocoaPods is in
+[maintenance mode](https://blog.cocoapods.org/CocoaPods-Support-Plans), and its trunk accepts no new pods or versions
+from [December 2026](https://blog.cocoapods.org/CocoaPods-Specs-Repo/); the pods published before keep installing.
+[Coming from CocoaPods](/start/from-cocoapods/) shows what a Podfile becomes.
+
+**Swift Package Manager.** SwiftPM is built into Xcode and is the right tool for Swift packages; otok's output for
+Apple platforms is itself a Swift package. But SwiftPM compiles C and C++ only with its own build, not with a library's
+CMake, Meson or autotools, so libraries such as OpenSSL or FFmpeg come to it as binary XCFrameworks someone else
+built. otok builds them for you and hands them to SwiftPM. SwiftPM has no part in the Gradle build of an Android app,
+where otok serves the same libraries.
+
+**Build scripts of your own.** Many teams build their native libraries with scripts of their own, one per platform.
+They work and they are yours, but each new platform, library or Xcode version is more of them to keep, and nothing
+checks that two machines build the same thing. otok's recipes are shared, and its lock makes every machine build the
+same libraries.
+
+What otok does not have yet: the size of their catalogs, their years of use, and prebuilt binaries for download. Its
+formats may still change before 1.0.
+
 ## For Apple apps
 
 ### Ready for the App Store

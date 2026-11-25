@@ -28,7 +28,8 @@ For coding agents:
 ## Docs
 
 - [Coding agents](https://otok-dev.github.io/guides/agents/): how an agent drives otok, the skill and an `AGENTS.md` note
-- [Install otok](https://otok-dev.github.io/start/install/): Homebrew, Scoop, the Linux install script, from source
+- [Install otok](https://otok-dev.github.io/start/install/): Homebrew, Scoop, the Linux install script
+- [Installation details](https://otok-dev.github.io/start/install-details/): the Windows sandbox and short paths, Linux specifics, building otok from source
 - [First project for Apple](https://otok-dev.github.io/start/apple/): `otok.toml`, `otok install`, the Swift package
 - [First project for Android](https://otok-dev.github.io/start/android/): the NDK, Gradle and CMake
 - [First project for Windows](https://otok-dev.github.io/start/windows/): CMake and Visual Studio projects

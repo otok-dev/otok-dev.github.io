@@ -6,7 +6,7 @@ banner:
   content: |
     otok is before 1.0: the formats of <code>otok.toml</code>, recipes and <code>otok.lock</code> may still change.
 hero:
-  tagline: Native libraries built from source for your app, from one <code>otok.toml</code> — for Apple platforms, Android, Windows and Linux.
+  tagline: Native libraries built from source for your app, with your toolchains and your options, from one <code>otok.toml</code> and one lockfile — for Apple platforms, Android, Windows and Linux.
   actions:
     - text: Why otok
       link: /why/
@@ -15,8 +15,8 @@ hero:
       link: /start/install/
       icon: right-arrow
       variant: secondary
-    - text: Coming from CocoaPods
-      link: /start/from-cocoapods/
+    - text: Browse libraries
+      link: https://otok-dev.github.io/index/
       variant: minimal
 ---
 
@@ -24,6 +24,13 @@ import { Card, CardGrid, LinkCard, Steps, Tabs, TabItem } from '@astrojs/starlig
 import { Image } from 'astro:assets';
 import iphoneShot from '../../assets/iphone-lz4.png';
 import xcodeIosShot from '../../assets/xcode-ios-lz4.png';
+import { OTOK_VERSION, OTOK_RELEASE } from '../../otok';
+
+The native libraries of an app (OpenSSL, ICU, Boost, FFmpeg) usually arrive as binaries someone else built with
+their own choices, or through build scripts you keep for each platform: a pod for iOS, a prebuilt AAR for Android, a
+triplet for Windows. otok replaces both. You list the libraries once; otok builds each of them from source for every
+platform you ship, with your compilers and your options, and pins every input in a lockfile, so that every machine and
+CI build the same libraries.
 
 <CardGrid>
   <LinkCard title="Apple platforms" href="/start/apple/" description="XCFrameworks in a Swift package for Xcode and SwiftPM, and for CMake." />
@@ -227,6 +234,35 @@ Step by step for each target: [Apple platforms](/start/apple/), [Android](/start
     XCFrameworks for every Apple platform and simulator, privacy manifests, checks of required-reason APIs and of
     symbols that would clash with Apple's private libraries, and the acknowledgements of every license.
   </Card>
+  <Card title="Your own libraries, the same way" icon="seti:git">
+    The native code of your team is a dependency like any other: its recipe in a private repository, its source
+    fetched with your keys, and its working tree built incrementally while you work on it.
+  </Card>
+  <Card title="Your app stays yours" icon="open-book">
+    otok is GPL-3.0 with an exception for everything it generates: the packaged libraries, `Package.swift`, CMake and
+    MSBuild files are yours under any terms, closed-source apps included. The libraries keep their own licenses, which
+    otok collects for your notices. [Licenses](/concepts/license/)
+  </Card>
 </CardGrid>
 
-[Browse the libraries](https://otok-dev.github.io/index/) of the public index.
+## Project status
+
+- **Release:** otok <a href={OTOK_RELEASE}>{OTOK_VERSION}</a>, before 1.0: the formats of `otok.toml`, recipes and
+  `otok.lock` may still change.
+- **Where it runs:** macOS (one universal binary), Windows x64, and Linux x86-64 and ARM64 (static, on any
+  distribution).
+- **What it builds:** Apple platforms on a Mac, Windows with Visual Studio, Linux with GCC or Clang, and Android with
+  the NDK on all three. Every recipe of the index was built on the targets it supports before it was published.
+- **Libraries:** 70+ in the [public catalog](https://otok-dev.github.io/index/), among them OpenSSL, curl, Boost,
+  ICU, FFmpeg, OpenCV, Skia, SQLite, protobuf and libarchive. A library that is missing needs a recipe: a
+  `recipe.toml` and a short `build.lua` ([Writing a recipe](/recipes/write/)).
+- **Examples:** [otok-dev/examples](https://github.com/otok-dev/examples) has a project per library, built and used
+  on every target it supports.
+- **Known limitations:** the first install builds everything from source and takes a while; later ones take the
+  builds from the cache, which a team can [share](/guides/cache/). On Linux, libraries are built against the C
+  library of the machine that builds them: build on the oldest distribution you support. Some Windows builds make
+  symbolic links, which need Developer Mode.
+- **Compared with vcpkg, Conan, CocoaPods and SwiftPM:** [otok and other tools](/why/#otok-and-other-tools), with what
+  otok does not have yet.
+- **Source and issues:** [github.com/otok-dev/otok](https://github.com/otok-dev/otok): the source, the
+  [releases](https://github.com/otok-dev/otok/releases) and the [issues](https://github.com/otok-dev/otok/issues).

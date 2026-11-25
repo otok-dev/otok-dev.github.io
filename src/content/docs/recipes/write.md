@@ -139,7 +139,7 @@ commands each slice runs, `-vv` their output, and `--keep-build-dirs` keeps the 
 you to look into.
 
 On Windows the paths `build.lua` gets (`slice.source`, `slice.prefix`, the dependencies' prefixes, toolchains) are on
-short drive letters that only otok and the build's processes see ([Install otok](/start/install/#windows)): use them
+short drive letters that only otok and the build's processes see ([Installation details](/start/install-details/#short-paths)): use them
 as they are, and do not hand them to a program outside the build.
 
 ## Options and dependencies

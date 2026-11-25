@@ -120,7 +120,7 @@ The DLL never:
 
 Two more things live in the DLL, with the sandbox and without it. Windows' build tools fail on paths longer than 260
 characters, so builds see the cache and their work directories through short drive letters that only otok and the
-processes of its builds have (see [Install](/start/install/#windows)); the DLL gives these to every new process and
+processes of its builds have (see [Installation details](/start/install-details/#short-paths)); the DLL gives these to every new process and
 writes paths back through them. And where otok runs without a desktop (a service, SSH, a CI runner installed as a
 service), otok makes a window station and a desktop of its own for the container, since Windows opens the service's
 one to none.
