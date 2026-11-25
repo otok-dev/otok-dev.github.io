@@ -232,9 +232,10 @@ Step by step for each target: [Apple platforms](/start/apple/), [Android](/start
     XCFrameworks for every Apple platform and simulator, privacy manifests, checks of required-reason APIs and of
     symbols that would clash with Apple's private libraries, and the acknowledgements of every license.
   </Card>
-  <Card title="Your own libraries, the same way" icon="seti:git">
-    The native code of your team is a dependency like any other: its recipe in a private repository, its source
-    fetched with your keys, and its working tree built incrementally while you work on it.
+  <Card title="Built for coding agents" icon="seti:json">
+    The commands an agent reads print JSON: one document for queries, an event per line for builds, with the log and
+    a hint when a build fails. `otok agent-skill` installs a skill that tells Claude Code and other agents how otok is
+    used, and [`/llms.txt`](/llms.txt) indexes these pages. [Coding agents](/guides/agents/)
   </Card>
   <Card title="Your app stays yours" icon="open-book">
     otok is GPL-3.0 with an exception for everything it generates: the packaged libraries, `Package.swift`, CMake and

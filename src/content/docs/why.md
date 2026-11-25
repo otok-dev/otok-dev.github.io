@@ -182,6 +182,15 @@ Linux, an AppContainer on Windows. Where it cannot be made (Linux without `bwrap
 own: it stops and says so, and `--no-sandbox` builds without it when you ask. [The build sandbox](/concepts/sandbox/)
 explains how it works, and why on Windows otok puts a DLL of its own into the processes of a build.
 
+## Built for coding agents
+
+A coding agent drives otok from the terminal as you would, and otok is made to be read by one. The commands it reads
+print JSON with `--format json`: one document for a query such as `search` or `info`, and for `install` an event per
+line as the build goes, each failed build with the log otok kept of it and a `hint` when otok knows what to do.
+`otok agent-skill` writes a skill for Claude Code and other agents that support skills: how a library is added, the
+`otok.toml` of each target, and what to do when a build fails. [`/llms.txt`](/llms.txt) indexes these pages, and
+`otok --help` points an agent to both. See [Coding agents](/guides/agents/).
+
 ## otok and other tools
 
 otok is young; the tools below are not, and for some projects each of them is the better choice. Here is where they
