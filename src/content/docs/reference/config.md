@@ -61,7 +61,8 @@ token-file = "~/.config/team/otok-cache-read-token"
 ```
 
 Write paths with `/`, or as TOML literal strings in single quotes (`'C:\Program Files\LLVM'`): in double quotes a `\`
-starts an escape.
+starts an escape. A relative path is relative to the directory of `config.toml`; in a variable (`OTOK_CACHE_DIR=../cache`),
+to the current directory.
 
 ## Keys
 
