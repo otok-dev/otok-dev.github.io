@@ -23,7 +23,10 @@ under your license.
      manifest declaring it, and no library defines symbols of Apple's private system libraries.
 3. **Use a machine that builds the target.** `otok publish` builds the recipe as a project of its own, for every
    platform and architecture it supports, in each of its environments that the machine has: a Mac for Apple, Windows
-   (or Linux with clang-cl) for Windows, any of them with the NDK for Android.
+   (or Linux with clang-cl) for Windows, any of them with the NDK for Android. With a
+   [store of your team](/guides/cache/#sharing-builds-between-machines) in its `config.toml`, the recipe's dependencies
+   come from the store when it has them; the recipes you publish are always built on this machine (or taken from its
+   own cache), since publishing says that they build there.
 
 ## Publish
 

@@ -70,7 +70,9 @@ otok cache push zlib --store URL # the builds of one library, into one store
 ```
 
 Libraries built from a source or recipe of a path on your machine (a `path` of `otok.toml`) are not pushed unless the
-store has `push-local = true`; those of [dev builds](/guides/dev-builds/) never are.
+store has `push-local = true`; those of [dev builds](/guides/dev-builds/) never are. [`otok publish`](/recipes/publish/)
+takes the dependencies of the recipes it publishes from the stores and pushes what it builds, but builds those recipes
+on the machine.
 
 A library is found in a store only when everything that went into its build is the same, the toolchain included: pin
 the versions of Xcode, Visual Studio, the NDK and the compilers on the machines that share a store. Whoever reads a
