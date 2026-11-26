@@ -63,6 +63,37 @@ number.
 before building (pushed, readable, its entry the same as the index's if the index has it) and says which are
 published already and which can be published. A script reads it with `--format json`.
 
+## A new upstream version
+
+When the library releases a new version, `otok bump` makes its recipe from the one you have. From otok 0.6.5:
+
+```sh
+otok bump recipes/cjson/1.7/apple 1.7.19                                # in place: a version of the same line
+otok bump recipes/cjson/1.7/apple 1.8.0 --into recipes/cjson/1.8/apple  # a copy: a new line
+```
+
+It writes the new `version` and `revision = 1`, and replaces the version in every input whose location holds it: the
+`url` and `mirrors` of an archive, which it downloads to write the new `sha256`, and the `tag` of a git repository,
+whose commit it looks up. It finds the version as URLs spell it (`1.92.0`, `1_92_0`, the line `1.92`), never inside
+another number. An input whose location does not hold the version is pinned apart from it and stays as it is. Only the
+values that change are rewritten: your comments and layout stay. When a file of the new version cannot be downloaded
+(the upstream renamed its files), or the source holds the version in a way otok does not replace, it says which input
+and writes nothing.
+
+`otok bump` does not check that the patches still apply or that `build.lua` still fits. It warns that the recipe has
+patches, and names every line of the directory that still mentions the old version (comments, `build.lua`), for you to
+look at. Then build the new recipe before you commit it:
+
+```sh
+otok publish --dry-run --working-tree recipes/cjson/1.8/apple
+```
+
+`--working-tree` builds the directory as it is, uncommitted, exactly as its publication would: every build and check
+of a publication but those that need git (that it is committed and pushed). It never publishes. Once it builds, commit,
+push and publish it as usual: the publication of the same files finds the builds of the dry run in the cache and does
+not build them again. With `--format json`, both commands give scripts what they did (`otok bump` one document with
+each input's old and new location, `publish` its usual events).
+
 ## Review
 
 The index's CI checks every pull request without running anything of it: the files hash to the entry, the entry says
@@ -79,7 +110,8 @@ A merged entry appears on the catalog and in `otok search` within minutes.
 ## After publishing
 
 **Entries are permanent.** A published version is never edited or removed, so that every lock that names it keeps
-working. To change a recipe, publish it again with its `revision` raised: `otok update` moves projects to it. To stop
+working. To change a recipe, publish it again with its `revision` raised: `otok update` moves projects to it. A new
+version of the library is a new entry too, made with [`otok bump`](#a-new-upstream-version). To stop
 projects from choosing a version, add an *advisory* to the index for it (withdrawn, broken or security), by a pull
 request as for an entry; `otok install` then avoids the version, and `otok audit` reports it in locks that have it.
 
