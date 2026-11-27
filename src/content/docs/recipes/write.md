@@ -344,6 +344,23 @@ framework on the platforms where it holds, and so does `otok-config.cmake`. A fr
 SDK does not have it is a problem of the output: `otok install` warns of it, and `otok publish` refuses the recipe, so
 that apps do not find it out at link time.
 
+### What a build may load
+
+After each build for Linux or an Apple platform, otok reads what its dynamic libraries and programs load (builds for
+Android and Windows see only the libraries of the NDK, or of the CRT and the Windows SDK). Each must be:
+
+- the system's C or C++ runtime: `libc.so.6`, `libm.so.6`, `libstdc++.so.6` and the like on Linux, everything in
+  `/usr/lib/` and `/System/` on Apple platforms;
+- a library of the same build or of a dependency, direct or not;
+- a library named in `link`: `z` allows `libz.so.1`.
+
+Anything else fails the build with a message like `… loads 'libpng16.so.16', which is neither its slice's, nor a
+dependency's, nor the system's`. The build found a library installed on the build machine, which the machines running
+your output may lack, or have in another version. Make it a dependency with a recipe of its own (`[deps]`), or turn
+the feature that wants it off. Name a library in `link` only when it is an interface of the system itself, one the
+program must use as the machine has it, such as `pam` or `crypt`: what `link` names comes from the machines, in
+versions no lock records.
+
 ## Tools
 
 A recipe can also build programs that run on the build machine: a code generator, a compiler. Other recipes then
@@ -369,6 +386,19 @@ return out
 Tool slices are built by the target of the machine's system (`macosx` of `apple` on a Mac, `linux`, `windows`), so a
 tool for every machine needs a variant for each of these three. `apotocki/protobuf` is an example of a library that is
 also a tool.
+
+A tool without products names the system libraries its programs load in `[tool] link` (otok 0.6.8 and later), as a
+product does in its `link` ([What a build may load](#what-a-build-may-load)). nginx checks the password hashes of
+`auth_basic` with the system's `crypt()`, which on Linux is in libxcrypt's `libcrypt.so.1`, not in the C library:
+
+```toml
+[tool]
+programs = ["nginx"]
+link = { libraries = [{ library = "crypt", when = { option = "crypt" } }] }
+```
+
+The build machine needs the library's headers (`libcrypt-dev`), since otok does not install packages of the system; a
+recipe whose build goes on without the library when it finds none should check that it found it, and fail otherwise.
 
 ## Other targets
 

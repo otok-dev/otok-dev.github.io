@@ -132,8 +132,10 @@ library's alone. It names the same `recipe`, and its `version` must allow the on
   Windows, a macOS one on a Mac. A project built on several systems locks the tool for each of them, like the tools
   recipes build with.
 - **Nothing beside it.** Tools are built static and in release, so `Otok/tools/<library>/` needs nothing but the
-  system's libraries. It holds whatever the recipe installs, not only `bin/` and not only the programs listed in
-  `deliver`; the files of the consumer name those listed.
+  system's own libraries, and those of the system its recipe names in `[tool] link`, such as `libcrypt.so.1` of nginx
+  with its option `crypt` ([What a build may load](/recipes/write/#what-a-build-may-load)). It holds whatever the
+  recipe installs, not only `bin/` and not only the programs listed in `deliver`; the files of the consumer name those
+  listed.
 - **Up to date.** A tool is copied again only when it changed. One that is no longer delivered is removed, and
   without any delivered tool `Otok/tools/` is removed too. Add `Otok/` to `.gitignore`: it is made by `otok install`.
 - **In CI.** `otok install --locked` builds or fetches the same tool from the cache, so CI runs the `protoc` the
