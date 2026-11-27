@@ -82,7 +82,8 @@ and writes nothing.
 
 `otok bump` does not check that the patches still apply or that `build.lua` still fits. It warns that the recipe has
 patches, and names every line of the directory that still mentions the old version (comments, `build.lua`), for you to
-look at. Then build the new recipe before you commit it:
+look at. A version that `build.lua` writes into a file or a path is better taken from `slice.version`
+([build.lua](/recipes/write/#buildlua)), which follows the recipe. Then build the new recipe before you commit it:
 
 ```sh
 otok publish --dry-run --working-tree recipes/cjson/1.8/apple

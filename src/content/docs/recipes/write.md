@@ -117,6 +117,14 @@ environment already carries the jobserver for tools that understand it.
 
 The function returns the libraries by the names products use, and the headers.
 
+A file the build writes itself takes the version from `slice.version` (otok 0.6.6 and later), the recipe's `version`
+without the revision, rather than writing it out, so that the next version of the recipe needs no edit of `build.lua`:
+
+```lua
+local lines = { "Name: cJSON", "Version: " .. slice.version, --[[ ... ]] }
+otok.write(slice.prefix .. "/lib/pkgconfig/cjson.pc", table.concat(lines, "\n") .. "\n")
+```
+
 ## Build it
 
 ```text
